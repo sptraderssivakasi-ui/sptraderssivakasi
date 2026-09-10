@@ -60,6 +60,13 @@ ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.enquiries ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they already exist
+DROP POLICY IF EXISTS "Public categories read access" ON public.categories;
+DROP POLICY IF EXISTS "Public products read access" ON public.products;
+DROP POLICY IF EXISTS "Allow public all on categories" ON public.categories;
+DROP POLICY IF EXISTS "Allow public all on products" ON public.products;
+DROP POLICY IF EXISTS "Allow public insert enquiry" ON public.enquiries;
+
 -- Allow public read access to catalog
 CREATE POLICY "Public categories read access" ON public.categories FOR SELECT USING (true);
 CREATE POLICY "Public products read access" ON public.products FOR SELECT USING (true);

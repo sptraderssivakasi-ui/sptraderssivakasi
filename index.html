@@ -400,21 +400,85 @@
       }
     }
 
-            <span class="font-display text-xl font-bold text-gold">₹${p.price}</span>
-            <span class="text-paper/40 text-sm line-through">₹${p.mrp}</span>
-          </div>
-          <div class="flex gap-2 mt-4">
-            <button onclick="handleAddToCart('${p.id}')" class="add-to-cart-btn flex-1 bg-gold/10 border border-gold/30 text-gold py-2.5 rounded-lg text-sm font-bold hover:bg-gold hover:text-night transition-all" data-id="${p.id}">
-              + Add to Enquiry
-            </button>
-            <a href="product-detail.html?id=${p.id}" class="px-3 py-2.5 rounded-lg border border-paper/10 text-paper/60 hover:text-gold hover:border-gold/30 transition-all text-sm flex items-center">
-              View
-            </a>
-          </div>
-        </div>
-      `;
-      featuredGrid.appendChild(card);
-    });
+    /* ── Render Dynamic Categories & Featured Products ── */
+    function renderDynamicContent() {
+      /* ── Category Icon Strip ── */
+      const iconStrip = document.getElementById('iconStrip');
+      if (iconStrip) {
+        iconStrip.innerHTML = '';
+        const categories = SP_STORE.getCategories();
+        categories.forEach(cat => {
+          const div = document.createElement('a');
+          div.href = `products.html?cat=${cat.id}`;
+          div.className = 'flex-shrink-0 flex flex-col items-center gap-3 cursor-pointer group w-24 text-center';
+          div.innerHTML = `
+            <div class="w-20 h-20 rounded-full bg-night-3 border-2 border-gold overflow-hidden shadow-lg group-hover:-translate-y-1 group-hover:border-gold-soft transition-all duration-300 flex items-center justify-center text-3xl">
+              🎆
+            </div>
+            <span class="text-xs font-bold text-paper/80 group-hover:text-gold transition-colors">${cat.name}</span>
+          `;
+          iconStrip.appendChild(div);
+        });
+      }
+
+      /* ── Category Grid ── */
+      const catGrid = document.getElementById('catGrid');
+      if (catGrid) {
+        catGrid.innerHTML = '';
+        const categories = SP_STORE.getCategories();
+        categories.forEach(cat => {
+          const card = document.createElement('a');
+          card.href = `products.html?cat=${cat.id}`;
+          card.className = 'glass rounded-xl p-6 group cursor-pointer hover:border-gold/30 transition-all duration-300 tilt-card';
+          card.innerHTML = `
+            <div class="w-12 h-12 rounded-lg bg-gold/10 flex items-center justify-center text-2xl mb-4 group-hover:bg-gold/20 transition-colors">🎆</div>
+            <h3 class="font-display text-lg font-bold text-paper group-hover:text-gold transition-colors">${cat.name}</h3>
+            <p class="text-paper/50 text-sm mt-2 leading-relaxed">${SP_STORE.getProductsByCategory(cat.id).length} products available</p>
+            <div class="mt-4 text-gold text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Explore →</div>
+          `;
+          catGrid.appendChild(card);
+        });
+      }
+
+      /* ── Featured Products ── */
+      const featuredGrid = document.getElementById('featuredGrid');
+      if (featuredGrid) {
+        featuredGrid.innerHTML = '';
+        const products = SP_STORE.getProducts();
+        const featured = products.slice(0, 6);
+        featured.forEach(p => {
+          const disc = SP_STORE.discountPct(p.mrp, p.price);
+          const card = document.createElement('div');
+          card.className = 'glass rounded-xl overflow-hidden group hover:border-gold/30 transition-all duration-300 tilt-card';
+          card.innerHTML = `
+            <div class="relative bg-night-3 h-40 flex items-center justify-center overflow-hidden">
+              <span class="text-5xl group-hover:scale-110 transition-transform duration-500">🎆</span>
+              <span class="discount-badge bg-gold text-night text-xs font-extrabold px-2.5 py-1 rounded-md">${disc}% OFF</span>
+            </div>
+            <div class="p-5">
+              <span class="text-gold/60 text-xs font-semibold">${SP_STORE.getCategoryName(p.categoryId)}</span>
+              <h4 class="font-display text-base font-bold text-paper mt-1 group-hover:text-gold transition-colors">${p.name}</h4>
+              <p class="text-paper/50 text-xs mt-1">${p.shortDesc}</p>
+              <div class="flex items-baseline gap-3 mt-3">
+                <span class="font-display text-xl font-bold text-gold">₹${p.price}</span>
+                <span class="text-paper/40 text-sm line-through">₹${p.mrp}</span>
+              </div>
+              <div class="flex gap-2 mt-4">
+                <button onclick="handleAddToCart('${p.id}')" class="add-to-cart-btn flex-1 bg-gold/10 border border-gold/30 text-gold py-2.5 rounded-lg text-sm font-bold hover:bg-gold hover:text-night transition-all" data-id="${p.id}">
+                  + Add to Enquiry
+                </button>
+                <a href="product-detail.html?id=${p.id}" class="px-3 py-2.5 rounded-lg border border-paper/10 text-paper/60 hover:text-gold hover:border-gold/30 transition-all text-sm flex items-center">
+                  View
+                </a>
+              </div>
+            </div>
+          `;
+          featuredGrid.appendChild(card);
+        });
+      }
+
+      document.querySelectorAll('.tilt-card').forEach(attachTilt);
+    }
 
     /* ── Add to Cart handler ── */
     window.handleAddToCart = function(prodId) {
@@ -493,6 +557,8 @@
     });
 
     updateCartUI();
+    renderDynamicContent();
+    window.addEventListener('sp-store-updated', renderDynamicContent);
 
     /* ── 3D Tilt ── */
     function attachTilt(el) {

@@ -244,25 +244,25 @@
         </div>
         <div class="relative bg-night-4 rounded-xl p-4 border border-white/10 font-mono text-xs text-paper/80 overflow-x-auto max-h-[500px]">
           <pre id="sqlPreCode"><code>-- =====================================================================
--- SP TRADERS SIVAKASI - FIREWORKS DATABASE SCHEMA (Production Ready)
+-- SP TRADERS SIVAKASI - SUPABASE POSTGRES DATABASE SCHEMA & POLICIES
 -- =====================================================================
 
 -- 1. CATEGORIES TABLE
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS public.categories (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
     image_url TEXT,
     display_order INT DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
 -- 2. PRODUCTS TABLE
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS public.products (
     id VARCHAR(50) PRIMARY KEY,
-    category_id VARCHAR(50) NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+    category_id VARCHAR(50) NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL,
     short_desc VARCHAR(255),
@@ -273,31 +273,41 @@ CREATE TABLE products (
     image_url TEXT,
     is_featured BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 3. ENQUIRIES / LEADS TABLE (Tracks WhatsApp & Web Inquiries)
-CREATE TABLE enquiries (
+-- 3. ENQUIRIES / LEADS TABLE
+CREATE TABLE IF NOT EXISTS public.enquiries (
     id BIGSERIAL PRIMARY KEY,
     customer_name VARCHAR(150),
     customer_phone VARCHAR(30) NOT NULL,
     customer_city VARCHAR(100),
-    total_estimated_amount NUMERIC(12, 2) DEFAULT 0,
-    enquiry_type VARCHAR(50) DEFAULT 'whatsapp',
+    total_estimated_amount NUMERIC(12, 2) DEFAULT 0.00,
+    items JSONB DEFAULT '[]'::jsonb,
+    enquiry_channel VARCHAR(50) DEFAULT 'whatsapp',
+    status VARCHAR(50) DEFAULT 'pending',
     notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 4. ENQUIRY ITEMS TABLE
-CREATE TABLE enquiry_items (
-    id BIGSERIAL PRIMARY KEY,
-    enquiry_id BIGINT NOT NULL REFERENCES enquiries(id) ON DELETE CASCADE,
-    product_id VARCHAR(50) REFERENCES products(id) ON DELETE SET NULL,
-    product_name VARCHAR(255) NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-    unit_price NUMERIC(10, 2) NOT NULL
-);
+-- 4. ROW LEVEL SECURITY (RLS) POLICIES
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.enquiries ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public categories read access" ON public.categories;
+DROP POLICY IF EXISTS "Public products read access" ON public.products;
+DROP POLICY IF EXISTS "Allow public all on categories" ON public.categories;
+DROP POLICY IF EXISTS "Allow public all on products" ON public.products;
+DROP POLICY IF EXISTS "Allow public insert enquiry" ON public.enquiries;
+
+CREATE POLICY "Public categories read access" ON public.categories FOR SELECT USING (true);
+CREATE POLICY "Public products read access" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Allow public all on categories" ON public.categories FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public all on products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public insert enquiry" ON public.enquiries FOR ALL USING (true) WITH CHECK (true);
 
 -- 5. INDEXES FOR HIGH-PERFORMANCE SEARCH & FILTERING
 CREATE INDEX idx_products_category ON products(category_id);
