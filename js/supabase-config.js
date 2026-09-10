@@ -5,14 +5,14 @@
  */
 
 const SUPABASE_DEFAULT_URL = 'https://websuabugmjknzmaqzfi.supabase.co';
-const SUPABASE_DEFAULT_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLIC_KEY';
+const SUPABASE_DEFAULT_ANON_KEY = 'sb_publishable_pioEQydt_VajxlN8J2Nqaw_W5ctH95S';
 
 const SP_SUPABASE = (() => {
   // Read from localStorage (if configured in Admin) or fallback to defaults
   function getCredentials() {
     const url = localStorage.getItem('sp_supabase_url') || SUPABASE_DEFAULT_URL;
     const anonKey = localStorage.getItem('sp_supabase_anon_key') || SUPABASE_DEFAULT_ANON_KEY;
-    const isConfigured = Boolean(url && url.includes('supabase.co') && anonKey && anonKey !== 'YOUR_SUPABASE_ANON_PUBLIC_KEY');
+    const isConfigured = Boolean(url && url.includes('supabase.co') && anonKey && !anonKey.includes('YOUR_SUPABASE'));
     return { url, anonKey, isConfigured };
   }
 

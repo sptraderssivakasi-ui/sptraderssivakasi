@@ -507,7 +507,7 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
       if (creds.url && creds.url !== 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co') {
         supabaseUrlInput.value = creds.url;
       }
-      if (creds.anonKey && creds.anonKey !== 'YOUR_SUPABASE_ANON_PUBLIC_KEY') {
+      if (creds.anonKey && !creds.anonKey.includes('YOUR_SUPABASE')) {
         supabaseKeyInput.value = creds.anonKey;
       }
       updateSupabaseBadge();
