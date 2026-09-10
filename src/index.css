@@ -4,7 +4,15 @@
 
 @layer base {
   body {
-    @apply bg-night text-paper font-body antialiased selection:bg-gold selection:text-night;
+    background-color: #0F0A1E;
+    color: #FBF3E2;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background-color: #E8A63D;
+    color: #0F0A1E;
   }
 }
 
@@ -19,6 +27,7 @@
 .glass-card {
   background: rgba(37, 27, 68, 0.5);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -35,6 +44,7 @@
 .text-gold-gradient {
   background: linear-gradient(135deg, #F4CE84 0%, #E8A63D 50%, #C48220 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
