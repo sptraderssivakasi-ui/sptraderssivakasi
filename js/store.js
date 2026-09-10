@@ -1,7 +1,7 @@
 /**
- * SP Traders — Data Store
- * Manages categories & products via localStorage.
- * Admin panel writes here; public pages read from here.
+ * SP Traders — Data Store with Supabase Backend Sync
+ * Provides real-time synchronization with Supabase DB while maintaining
+ * fast local caching and offline fallback.
  */
 
 const SP_STORE = (() => {
@@ -57,26 +57,71 @@ const SP_STORE = (() => {
     try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) { /* ignore */ }
   }
 
+  /* ── Sync with Supabase in background ── */
+  async function syncFromSupabase() {
+    if (typeof window.SP_SUPABASE === 'undefined') return;
+    try {
+      const [remoteCats, remoteProds] = await Promise.all([
+        window.SP_SUPABASE.fetchCategories(),
+        window.SP_SUPABASE.fetchProducts()
+      ]);
+
+      let changed = false;
+      if (remoteCats && Array.isArray(remoteCats) && remoteCats.length > 0) {
+        write(CATS_KEY, remoteCats);
+        changed = true;
+      }
+      if (remoteProds && Array.isArray(remoteProds) && remoteProds.length > 0) {
+        write(PRODS_KEY, remoteProds);
+        changed = true;
+      }
+
+      if (changed) {
+        window.dispatchEvent(new CustomEvent('sp-store-updated'));
+      }
+    } catch (err) {
+      console.warn('Sync from Supabase background notice:', err);
+    }
+  }
+
+  // Auto initialize sync on script load
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(syncFromSupabase, 100);
+    });
+  }
+
   /* ── Categories ── */
   function getCategories() { return read(CATS_KEY, seedCategories); }
   function saveCategories(list) { write(CATS_KEY, list); }
 
-  function addCategory(cat) {
+  async function addCategory(cat) {
     const list = getCategories();
-    cat.id = uid();
+    if (!cat.id) cat.id = uid();
+    if (!cat.slug) cat.slug = cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     list.push(cat);
     saveCategories(list);
+
+    if (window.SP_SUPABASE) {
+      try { await window.SP_SUPABASE.upsertCategory(cat); } catch (e) { console.error(e); }
+    }
     return cat;
   }
-  function updateCategory(id, data) {
+
+  async function updateCategory(id, data) {
     const list = getCategories();
     const idx = list.findIndex(c => c.id === id);
     if (idx === -1) return null;
     list[idx] = { ...list[idx], ...data, id };
     saveCategories(list);
+
+    if (window.SP_SUPABASE) {
+      try { await window.SP_SUPABASE.upsertCategory(list[idx]); } catch (e) { console.error(e); }
+    }
     return list[idx];
   }
-  function deleteCategory(id) {
+
+  async function deleteCategory(id) {
     let list = getCategories();
     list = list.filter(c => c.id !== id);
     saveCategories(list);
@@ -84,6 +129,10 @@ const SP_STORE = (() => {
     let prods = getProducts();
     prods = prods.filter(p => p.categoryId !== id);
     saveProducts(prods);
+
+    if (window.SP_SUPABASE) {
+      try { await window.SP_SUPABASE.deleteCategory(id); } catch (e) { console.error(e); }
+    }
   }
 
   /* ── Products ── */
@@ -93,29 +142,53 @@ const SP_STORE = (() => {
   function getProduct(id) { return getProducts().find(p => p.id === id) || null; }
   function getProductsByCategory(catId) { return getProducts().filter(p => p.categoryId === catId); }
 
-  function addProduct(prod) {
+  async function addProduct(prod) {
     const list = getProducts();
-    prod.id = uid();
+    if (!prod.id) prod.id = uid();
+    if (!prod.slug) prod.slug = prod.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     list.push(prod);
     saveProducts(list);
+
+    if (window.SP_SUPABASE) {
+      try { await window.SP_SUPABASE.upsertProduct(prod); } catch (e) { console.error(e); }
+    }
     return prod;
   }
-  function updateProduct(id, data) {
+
+  async function updateProduct(id, data) {
     const list = getProducts();
     const idx = list.findIndex(p => p.id === id);
     if (idx === -1) return null;
     list[idx] = { ...list[idx], ...data, id };
     saveProducts(list);
+
+    if (window.SP_SUPABASE) {
+      try { await window.SP_SUPABASE.upsertProduct(list[idx]); } catch (e) { console.error(e); }
+    }
     return list[idx];
   }
-  function deleteProduct(id) {
+
+  async function deleteProduct(id) {
     let list = getProducts();
     list = list.filter(p => p.id !== id);
     saveProducts(list);
+
+    if (window.SP_SUPABASE) {
+      try { await window.SP_SUPABASE.deleteProduct(id); } catch (e) { console.error(e); }
+    }
   }
 
-  /* ── WhatsApp ── */
+  /* ── WhatsApp & Supabase Enquiry ── */
   function enquireProduct(product) {
+    if (window.SP_SUPABASE) {
+      window.SP_SUPABASE.submitEnquiry({
+        name: 'Website Visitor',
+        total: product.price,
+        items: [{ id: product.id, name: product.name, meta: product.meta, price: product.price, qty: 1 }],
+        channel: 'whatsapp'
+      });
+    }
+
     const msg = encodeURIComponent(
       `Hi SP Traders, I would like to enquire about:\n\n• ${product.name} (${product.meta}) — ₹${product.price}\n\nPlease confirm availability and final price.`
     );
@@ -123,8 +196,18 @@ const SP_STORE = (() => {
   }
 
   function enquireMultiple(items) {
-    let lines = items.map(i => `• ${i.name} (${i.meta}) x${i.qty}`).join('\n');
     const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+    if (window.SP_SUPABASE) {
+      window.SP_SUPABASE.submitEnquiry({
+        name: 'Bulk Cart Customer',
+        total: total,
+        items: items,
+        channel: 'whatsapp'
+      });
+    }
+
+    let lines = items.map(i => `• ${i.name} (${i.meta}) x${i.qty}`).join('\n');
     const msg = encodeURIComponent(
       `Hi SP Traders, I would like to enquire about:\n\n${lines}\n\nEstimated total: ₹${total}\n\nPlease confirm availability and final price.`
     );
@@ -137,7 +220,8 @@ const SP_STORE = (() => {
   }
 
   function discountPct(mrp, price) {
-    return Math.round((1 - price / mrp) * 100);
+    if (!mrp || mrp <= 0) return 0;
+    return Math.max(0, Math.round((1 - price / mrp) * 100));
   }
 
   /* ── Enquiry Cart (localStorage) ── */
@@ -182,6 +266,8 @@ const SP_STORE = (() => {
     addProduct, updateProduct, deleteProduct,
     enquireProduct, enquireMultiple, getCategoryName, discountPct,
     getCart, saveCart, addToCart, removeFromCart, updateCartQty, clearCart,
-    resetToDefaults, WA_NUMBER
+    resetToDefaults, syncFromSupabase, WA_NUMBER
   };
 })();
+
+window.SP_STORE = SP_STORE;

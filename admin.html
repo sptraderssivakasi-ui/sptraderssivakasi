@@ -105,16 +105,74 @@
     </div>
 
     <!-- TABS NAVIGATION -->
-    <div class="flex border-b border-gold/20 mb-6 gap-2">
-      <button id="tabBtnProducts" class="tab-btn active px-6 py-3 font-bold text-sm text-gold border-b-2 border-gold transition-all flex items-center gap-2">
+    <div class="flex border-b border-gold/20 mb-6 gap-2 flex-wrap">
+      <button id="tabBtnProducts" class="tab-btn active px-5 py-3 font-bold text-sm text-gold border-b-2 border-gold transition-all flex items-center gap-2">
         <span>📦</span> Products (<span id="prodTabCount">0</span>)
       </button>
-      <button id="tabBtnCategories" class="tab-btn px-6 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
+      <button id="tabBtnCategories" class="tab-btn px-5 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
         <span>📑</span> Categories (<span id="catTabCount">0</span>)
       </button>
-      <button id="tabBtnSql" class="tab-btn px-6 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
-        <span>🗄️</span> SQL DB Schema
+      <button id="tabBtnSupabase" class="tab-btn px-5 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
+        <span>⚡</span> Supabase DB Sync
       </button>
+      <button id="tabBtnSql" class="tab-btn px-5 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
+        <span>🗄️</span> SQL Schema
+      </button>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="adminToast" class="fixed bottom-6 right-6 z-50 bg-night-2 border border-gold/40 text-paper px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+      <span id="toastIcon" class="text-xl">✅</span>
+      <span id="toastMsg" class="text-sm font-semibold">Action completed</span>
+    </div>
+
+    <!-- ══════ SECTION: SUPABASE SYNC TAB ══════ -->
+    <div id="sectionSupabase" class="space-y-6 hidden">
+      <div class="bg-night-2 border border-gold/20 rounded-3xl p-6 lg:p-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div>
+            <div class="flex items-center gap-3">
+              <h2 class="font-display text-2xl font-bold text-paper">Supabase Cloud Database Settings</h2>
+              <span id="supabaseStatusBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-yellow-950/60 border border-yellow-500/30 text-yellow-400">
+                🟡 Local Mode
+              </span>
+            </div>
+            <p class="text-sm text-paper/60 mt-1">Connect your live Supabase project to enable real-time CRUD and cloud sync for SP Traders Sivakasi.</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="testSupabaseBtn" class="bg-night-3 hover:bg-night-4 border border-gold/30 text-gold text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+              <span>🔌</span> Test Connection
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-2">Supabase Project URL</label>
+            <input type="text" id="supabaseUrlInput" placeholder="https://xyzcompany.supabase.co" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-3 text-paper font-mono text-sm placeholder-paper/30 focus:outline-none focus:border-gold">
+            <p class="text-xs text-paper/40 mt-1.5">Found in Supabase Dashboard → Settings → API → Project URL</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-2">Supabase Anon Public Key</label>
+            <input type="text" id="supabaseKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsIn..." class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-3 text-paper font-mono text-sm placeholder-paper/30 focus:outline-none focus:border-gold">
+            <p class="text-xs text-paper/40 mt-1.5">Found in Supabase Dashboard → Settings → API → Project API Keys (anon public)</p>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+          <button id="saveSupabaseCredsBtn" class="bg-gold hover:bg-gold-soft text-night font-bold px-6 py-3 rounded-xl text-sm transition-all flex items-center gap-2 shadow-lg">
+            <span>💾</span> Save Credentials & Connect
+          </button>
+          <div class="flex gap-3">
+            <button id="pushLocalToCloudBtn" class="bg-night-3 hover:bg-night-4 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+              <span>⬆️</span> Push Local Catalog to Supabase
+            </button>
+            <button id="pullCloudToLocalBtn" class="bg-night-3 hover:bg-night-4 border border-sky-500/30 text-sky-400 text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+              <span>⬇️</span> Pull Fresh Data from Supabase
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ══════ SECTION: PRODUCTS TAB ══════ -->
@@ -374,6 +432,8 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/store.js"></script>
   <script>
   (() => {
@@ -388,30 +448,143 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
       'cat-8': '🎁'
     };
 
+    // Toast helper
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('adminToast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+      if (!toast) return;
+      toastMsg.textContent = msg;
+      toastIcon.textContent = icon;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-20');
+      }, 3000);
+    }
+
     // Tabs
     const tabProducts = document.getElementById('tabBtnProducts');
     const tabCategories = document.getElementById('tabBtnCategories');
+    const tabSupabase = document.getElementById('tabBtnSupabase');
     const tabSql = document.getElementById('tabBtnSql');
 
     const secProducts = document.getElementById('sectionProducts');
     const secCategories = document.getElementById('sectionCategories');
+    const secSupabase = document.getElementById('sectionSupabase');
     const secSql = document.getElementById('sectionSql');
 
     function switchTab(activeBtn, activeSec) {
-      [tabProducts, tabCategories, tabSql].forEach(b => {
+      [tabProducts, tabCategories, tabSupabase, tabSql].forEach(b => {
         b.classList.remove('text-gold', 'border-gold');
         b.classList.add('text-paper/60', 'border-transparent');
       });
       activeBtn.classList.remove('text-paper/60', 'border-transparent');
       activeBtn.classList.add('text-gold', 'border-gold');
 
-      [secProducts, secCategories, secSql].forEach(s => s.classList.add('hidden'));
+      [secProducts, secCategories, secSupabase, secSql].forEach(s => s.classList.add('hidden'));
       activeSec.classList.remove('hidden');
     }
 
     tabProducts.addEventListener('click', () => switchTab(tabProducts, secProducts));
     tabCategories.addEventListener('click', () => switchTab(tabCategories, secCategories));
+    tabSupabase.addEventListener('click', () => switchTab(tabSupabase, secSupabase));
     tabSql.addEventListener('click', () => switchTab(tabSql, secSql));
+
+    // Supabase Settings & Sync Logic
+    const supabaseUrlInput = document.getElementById('supabaseUrlInput');
+    const supabaseKeyInput = document.getElementById('supabaseKeyInput');
+    const saveSupabaseCredsBtn = document.getElementById('saveSupabaseCredsBtn');
+    const testSupabaseBtn = document.getElementById('testSupabaseBtn');
+    const pushLocalToCloudBtn = document.getElementById('pushLocalToCloudBtn');
+    const pullCloudToLocalBtn = document.getElementById('pullCloudToLocalBtn');
+    const supabaseStatusBadge = document.getElementById('supabaseStatusBadge');
+
+    function loadSupabaseCreds() {
+      if (!window.SP_SUPABASE) return;
+      const creds = window.SP_SUPABASE.getCredentials();
+      if (creds.url && creds.url !== 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co') {
+        supabaseUrlInput.value = creds.url;
+      }
+      if (creds.anonKey && creds.anonKey !== 'YOUR_SUPABASE_ANON_PUBLIC_KEY') {
+        supabaseKeyInput.value = creds.anonKey;
+      }
+      updateSupabaseBadge();
+    }
+
+    async function updateSupabaseBadge() {
+      if (!window.SP_SUPABASE) return;
+      const creds = window.SP_SUPABASE.getCredentials();
+      if (creds.isConfigured) {
+        supabaseStatusBadge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400';
+        supabaseStatusBadge.textContent = '🟢 Supabase DB Connected';
+      } else {
+        supabaseStatusBadge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-yellow-950/60 border border-yellow-500/30 text-yellow-400';
+        supabaseStatusBadge.textContent = '🟡 Local Mode (Not Connected)';
+      }
+    }
+
+    if (saveSupabaseCredsBtn) {
+      saveSupabaseCredsBtn.addEventListener('click', async () => {
+        const url = supabaseUrlInput.value.trim();
+        const key = supabaseKeyInput.value.trim();
+        if (!url || !key) {
+          alert('Please enter both Project URL and Anon Public Key.');
+          return;
+        }
+        window.SP_SUPABASE.setCredentials(url, key);
+        showToast('Credentials saved! Testing connection...', '⏳');
+        const res = await window.SP_SUPABASE.testConnection();
+        if (res.success) {
+          showToast('Connected to Supabase successfully!', '✅');
+          updateSupabaseBadge();
+          await SP_STORE.syncFromSupabase();
+          refreshData();
+        } else {
+          showToast(`Connection failed: ${res.message}`, '❌');
+          updateSupabaseBadge();
+        }
+      });
+    }
+
+    if (testSupabaseBtn) {
+      testSupabaseBtn.addEventListener('click', async () => {
+        showToast('Testing Supabase connection...', '🔌');
+        const res = await window.SP_SUPABASE.testConnection();
+        if (res.success) {
+          showToast('Supabase connection verified!', '✅');
+          updateSupabaseBadge();
+        } else {
+          showToast(res.message, '⚠️');
+        }
+      });
+    }
+
+    if (pushLocalToCloudBtn) {
+      pushLocalToCloudBtn.addEventListener('click', async () => {
+        if (!confirm('This will upload all current local products & categories to your Supabase database. Continue?')) return;
+        showToast('Uploading catalog to Supabase...', '⏳');
+        const cats = SP_STORE.getCategories();
+        const prods = SP_STORE.getProducts();
+        try {
+          for (const c of cats) { await window.SP_SUPABASE.upsertCategory(c); }
+          for (const p of prods) { await window.SP_SUPABASE.upsertProduct(p); }
+          showToast(`Successfully pushed ${cats.length} categories & ${prods.length} products to Supabase!`, '🎉');
+        } catch (err) {
+          showToast(`Upload failed: ${err.message}`, '❌');
+        }
+      });
+    }
+
+    if (pullCloudToLocalBtn) {
+      pullCloudToLocalBtn.addEventListener('click', async () => {
+        showToast('Fetching latest data from Supabase...', '⏳');
+        await SP_STORE.syncFromSupabase();
+        refreshData();
+        showToast('Data synced from Supabase!', '✅');
+      });
+    }
 
     // Stats & Tables rendering
     function refreshData() {
@@ -608,7 +781,7 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
     closeProductModal.addEventListener('click', closeProdModal);
     cancelProductBtn.addEventListener('click', closeProdModal);
 
-    productForm.addEventListener('submit', (e) => {
+    productForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('formProductId').value;
       const data = {
@@ -622,13 +795,17 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
         image: document.getElementById('formProdImage').value.trim()
       };
 
+      closeProdModal();
       if (id) {
-        SP_STORE.updateProduct(id, data);
+        showToast('Updating product...', '⏳');
+        await SP_STORE.updateProduct(id, data);
+        showToast('Product updated successfully!', '✅');
       } else {
-        SP_STORE.addProduct(data);
+        showToast('Adding new product...', '⏳');
+        await SP_STORE.addProduct(data);
+        showToast('Product added successfully!', '✨');
       }
 
-      closeProdModal();
       refreshData();
     });
 
@@ -637,9 +814,11 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
       if (prod) openProdModal(true, prod);
     };
 
-    window.handleDeleteProduct = function(id) {
+    window.handleDeleteProduct = async function(id) {
       if (confirm('Are you sure you want to delete this product?')) {
-        SP_STORE.deleteProduct(id);
+        showToast('Deleting product...', '🗑️');
+        await SP_STORE.deleteProduct(id);
+        showToast('Product deleted.', '✅');
         refreshData();
       }
     };
@@ -647,7 +826,6 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
     /* ── Category Modal Logic ── */
     const categoryModal = document.getElementById('categoryModal');
     const openAddCategoryBtn = document.getElementById('openAddCategoryBtn');
-    const addCatBtn2 = document.getElementById('addCatBtn2');
     const closeCategoryModal = document.getElementById('closeCategoryModal');
     const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
     const categoryForm = document.getElementById('categoryForm');
@@ -671,11 +849,10 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
     }
 
     openAddCategoryBtn.addEventListener('click', () => openCatModal(false));
-    addCatBtn2.addEventListener('click', () => openCatModal(false));
     closeCategoryModal.addEventListener('click', closeCatModal);
     cancelCategoryBtn.addEventListener('click', closeCatModal);
 
-    categoryForm.addEventListener('submit', (e) => {
+    categoryForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('formCatId').value;
       const data = {
@@ -684,13 +861,17 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
         image: document.getElementById('formCatImage').value.trim()
       };
 
+      closeCatModal();
       if (id) {
-        SP_STORE.updateCategory(id, data);
+        showToast('Updating category...', '⏳');
+        await SP_STORE.updateCategory(id, data);
+        showToast('Category updated!', '✅');
       } else {
-        SP_STORE.addCategory(data);
+        showToast('Adding category...', '⏳');
+        await SP_STORE.addCategory(data);
+        showToast('Category added!', '✨');
       }
 
-      closeCatModal();
       refreshData();
     });
 
@@ -699,9 +880,11 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
       if (cat) openCatModal(true, cat);
     };
 
-    window.handleDeleteCategory = function(id) {
+    window.handleDeleteCategory = async function(id) {
       if (confirm('Warning: Deleting a category will also delete all products under it. Proceed?')) {
-        SP_STORE.deleteCategory(id);
+        showToast('Deleting category...', '🗑️');
+        await SP_STORE.deleteCategory(id);
+        showToast('Category deleted.', '✅');
         refreshData();
       }
     };
@@ -711,6 +894,7 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
       if (confirm('Reset store back to the default Sivakasi product catalog?')) {
         SP_STORE.resetToDefaults();
         refreshData();
+        showToast('Catalog reset to defaults', '🔄');
       }
     });
 
@@ -724,8 +908,10 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
       });
     });
 
-    // Initial Load
+    // Initial Load & listen for store update events
+    loadSupabaseCreds();
     refreshData();
+    window.addEventListener('sp-store-updated', refreshData);
   })();
   </script>
 </body>

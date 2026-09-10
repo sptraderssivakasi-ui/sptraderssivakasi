@@ -314,6 +314,8 @@
   </footer>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/store.js"></script>
   <script>
   (() => {
@@ -350,18 +352,23 @@
     let currentProduct = null;
     let selectedQuantity = 1;
 
-    if (!productId) {
-      loadingState.classList.add('hidden');
-      notFoundState.classList.remove('hidden');
-    } else {
-      currentProduct = SP_STORE.getProduct(productId);
-      if (!currentProduct) {
+    function initProduct() {
+      if (!productId) {
         loadingState.classList.add('hidden');
         notFoundState.classList.remove('hidden');
       } else {
-        renderProductDetails(currentProduct);
+        currentProduct = SP_STORE.getProduct(productId);
+        if (!currentProduct) {
+          loadingState.classList.add('hidden');
+          notFoundState.classList.remove('hidden');
+        } else {
+          renderProductDetails(currentProduct);
+        }
       }
     }
+
+    initProduct();
+    window.addEventListener('sp-store-updated', initProduct);
 
     function renderProductDetails(p) {
       loadingState.classList.add('hidden');

@@ -1,24 +1,23 @@
 -- =====================================================================
--- SP TRADERS SIVAKASI - DATABASE SCHEMA & INITIAL SEED (Best Practices)
--- Supports PostgreSQL and MySQL (with minor dialect compatibility)
+-- SP TRADERS SIVAKASI - SUPABASE POSTGRES DATABASE SCHEMA & POLICIES
 -- =====================================================================
 
 -- 1. CATEGORIES TABLE
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS public.categories (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
     image_url TEXT,
     display_order INT DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
 -- 2. PRODUCTS TABLE
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS public.products (
     id VARCHAR(50) PRIMARY KEY,
-    category_id VARCHAR(50) NOT NULL,
+    category_id VARCHAR(50) NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL,
     short_desc VARCHAR(255),
@@ -29,61 +28,51 @@ CREATE TABLE IF NOT EXISTS products (
     image_url TEXT,
     is_featured BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 3. PRODUCT IMAGES (Optional multi-image gallery support)
-CREATE TABLE IF NOT EXISTS product_images (
-    id BIGSERIAL PRIMARY KEY,
-    product_id VARCHAR(50) NOT NULL,
-    image_url TEXT NOT NULL,
-    display_order INT DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_product_images FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-);
-
--- 4. ENQUIRIES / LEADS TABLE (Tracks incoming customer enquiries & WhatsApp leads)
-CREATE TABLE IF NOT EXISTS enquiries (
+-- 3. ENQUIRIES / LEADS TABLE (Tracks incoming cart orders & WhatsApp enquiries)
+CREATE TABLE IF NOT EXISTS public.enquiries (
     id BIGSERIAL PRIMARY KEY,
     customer_name VARCHAR(150),
     customer_phone VARCHAR(30) NOT NULL,
     customer_city VARCHAR(100),
     total_estimated_amount NUMERIC(12, 2) DEFAULT 0.00,
-    enquiry_channel VARCHAR(50) DEFAULT 'whatsapp', -- 'whatsapp', 'web_form', 'call'
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'contacted', 'confirmed', 'completed', 'cancelled'
+    items JSONB DEFAULT '[]'::jsonb,
+    enquiry_channel VARCHAR(50) DEFAULT 'whatsapp',
+    status VARCHAR(50) DEFAULT 'pending',
     notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
 );
 
--- 5. ENQUIRY ITEMS (Line items included in a bulk celebration order)
-CREATE TABLE IF NOT EXISTS enquiry_items (
-    id BIGSERIAL PRIMARY KEY,
-    enquiry_id BIGINT NOT NULL,
-    product_id VARCHAR(50),
-    product_name VARCHAR(255) NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-    unit_price NUMERIC(10, 2) NOT NULL,
-    total_price NUMERIC(10, 2) NOT NULL,
-    CONSTRAINT fk_enquiry_items_enquiry FOREIGN KEY (enquiry_id) REFERENCES enquiries(id) ON DELETE CASCADE,
-    CONSTRAINT fk_enquiry_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
-);
+-- 4. PERFORMANCE INDEXES
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
+CREATE INDEX IF NOT EXISTS idx_products_active ON public.products(is_active);
+CREATE INDEX IF NOT EXISTS idx_categories_slug ON public.categories(slug);
+CREATE INDEX IF NOT EXISTS idx_enquiries_created ON public.enquiries(created_at);
 
--- 6. INDEXES FOR HIGH-PERFORMANCE SEARCH & FILTERING
-CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
-CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
-CREATE INDEX IF NOT EXISTS idx_products_featured ON products(is_featured);
-CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
-CREATE INDEX IF NOT EXISTS idx_enquiries_phone ON enquiries(customer_phone);
-CREATE INDEX IF NOT EXISTS idx_enquiries_created ON enquiries(created_at);
+-- =====================================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- =====================================================================
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.enquiries ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to catalog
+CREATE POLICY "Public categories read access" ON public.categories FOR SELECT USING (true);
+CREATE POLICY "Public products read access" ON public.products FOR SELECT USING (true);
+
+-- Allow anon & authenticated insert/update/delete for store management
+CREATE POLICY "Allow public all on categories" ON public.categories FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public all on products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public insert enquiry" ON public.enquiries FOR ALL USING (true) WITH CHECK (true);
 
 -- =====================================================================
 -- SEED DATA (SP Traders Sivakasi Catalog)
 -- =====================================================================
-
-INSERT INTO categories (id, name, slug, image_url, display_order) VALUES
+INSERT INTO public.categories (id, name, slug, image_url, display_order) VALUES
 ('cat-1', 'Sparklers', 'sparklers', 'images/categories/sparklers.jpg', 1),
 ('cat-2', 'Ground Chakkars', 'ground', 'images/categories/ground.jpg', 2),
 ('cat-3', 'Flower Pots', 'flowerpots', 'images/categories/flowerpots.jpg', 3),
@@ -94,7 +83,7 @@ INSERT INTO categories (id, name, slug, image_url, display_order) VALUES
 ('cat-8', 'Gift Boxes', 'giftbox', 'images/categories/giftbox.jpg', 8)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO products (id, category_id, name, slug, short_desc, description, meta, mrp, price, is_featured) VALUES
+INSERT INTO public.products (id, category_id, name, slug, short_desc, description, meta, mrp, price, is_featured) VALUES
 ('sp1', 'cat-1', '7cm Electric Sparklers (Box of 10)', '7cm-electric-sparklers', 'Classic electric sparklers safe for all ages.', 'Premium quality 7cm electric sparklers from Sivakasi. Each box contains 10 sparklers that burn bright with a clean, steady flame. Ideal for children under adult supervision. Made from high-quality raw materials ensuring safe and vibrant sparks.', 'Box · 10 pieces', 60.00, 42.00, TRUE),
 ('sp2', 'cat-1', '12cm Colour Sparklers (Box of 10)', '12cm-colour-sparklers', 'Multi-colour sparklers with vibrant effects.', 'Stunning 12cm colour sparklers that produce mesmerizing multi-coloured sparks. Perfect for Diwali celebrations, these sparklers create beautiful patterns in the air. Each box contains 10 pieces of premium Sivakasi-made sparklers.', 'Box · 10 pieces', 90.00, 63.00, FALSE),
 ('gc1', 'cat-2', 'Ground Chakkar – Deluxe', 'ground-chakkar-deluxe', 'Spinning ground display with multi-colour effects.', 'The Deluxe Ground Chakkar spins rapidly on the ground producing stunning multi-colour sparks in concentric circles. A classic Diwali favourite, this chakkar is made from premium materials for consistent performance. Place on flat ground, light the fuse, and enjoy the spinning display.', 'Pack of 5', 150.00, 105.00, TRUE),
