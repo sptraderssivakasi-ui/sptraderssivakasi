@@ -175,8 +175,13 @@ export default function AdminPage({ categories, products, setCategories, setProd
     setProducts(nextProducts);
     localStorage.setItem('sp_products', JSON.stringify(nextProducts));
 
-    await upsertProduct(updatedProd);
-    showToast('Product saved to database & store!', '✅');
+    const res = await upsertProduct(updatedProd);
+    if (res && !res.success) {
+      alert(`Supabase Database Warning: ${res.error?.message || 'Could not write to Supabase'}. Please verify RLS policies and API keys.`);
+      showToast('Saved locally (Supabase error)', '⚠️');
+    } else {
+      showToast('Product saved to database & store!', '✅');
+    }
   };
 
   const handleDeleteProduct = async (id) => {
@@ -225,8 +230,13 @@ export default function AdminPage({ categories, products, setCategories, setProd
     setCategories(nextCategories);
     localStorage.setItem('sp_categories', JSON.stringify(nextCategories));
 
-    await upsertCategory(updatedCat);
-    showToast('Category saved!', '✅');
+    const res = await upsertCategory(updatedCat);
+    if (res && !res.success) {
+      alert(`Supabase Database Warning: ${res.error?.message || 'Could not write to Supabase'}. Please check RLS policies and API keys.`);
+      showToast('Saved locally (Supabase error)', '⚠️');
+    } else {
+      showToast('Category saved to database!', '✅');
+    }
   };
 
   const handleDeleteCategory = async (id) => {

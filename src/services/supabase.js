@@ -2,8 +2,8 @@ import { supabase } from '../utils/supabase';
 import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS, WA_PHONE } from '../data/seedData';
 
 export function getSupabaseCredentials() {
-  const url = import.meta.env.VITE_SUPABASE_URL || 'https://websuabugmjknzmaqzfi.supabase.co';
-  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_pioEQydt_VajxlN8J2Nqaw_W5ctH95S';
+  const url = localStorage.getItem('sp_supabase_url') || import.meta.env.VITE_SUPABASE_URL || 'https://websuabugmjknzmaqzfi.supabase.co';
+  const anonKey = localStorage.getItem('sp_supabase_anon_key') || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_pioEQydt_VajxlN8J2Nqaw_W5ctH95S';
   return { url, anonKey, isConfigured: true };
 }
 
@@ -23,7 +23,8 @@ export async function testSupabaseConnection() {
     if (error) throw error;
     return { success: true, message: 'Connected to Supabase DB successfully!' };
   } catch (err) {
-    return { success: false, message: err.message || 'Connection failed' };
+    console.error('Test Supabase Connection error:', err);
+    return { success: false, message: err.message || err.error_description || 'Connection failed' };
   }
 }
 
@@ -35,7 +36,13 @@ export async function fetchCategories() {
       .select('*')
       .eq('is_active', true)
       .order('display_order', { ascending: true });
-    if (!error && data && data.length > 0) {
+
+    if (error) {
+      console.error('Supabase fetchCategories error:', error);
+      throw error;
+    }
+
+    if (data && data.length > 0) {
       const mapped = data.map(c => ({
         id: c.id,
         name: c.name,
@@ -47,7 +54,7 @@ export async function fetchCategories() {
       return mapped;
     }
   } catch (e) {
-    console.warn('Supabase fetchCategories notice:', e);
+    console.warn('Supabase fetchCategories fallback to local:', e);
   }
 
   // Local fallback
@@ -64,17 +71,26 @@ export async function upsertCategory(cat) {
       image_url: cat.image || '',
       is_active: true
     };
-    await supabase.from('categories').upsert(row);
+    const { data, error } = await supabase.from('categories').upsert(row);
+    if (error) {
+      console.error('Upsert category cloud error:', error);
+      throw error;
+    }
+    return { success: true, data };
   } catch (e) {
-    console.warn('Upsert category cloud error:', e);
+    console.error('Upsert category exception:', e);
+    return { success: false, error: e };
   }
 }
 
 export async function deleteCategory(id) {
   try {
-    await supabase.from('categories').delete().eq('id', id);
+    const { data, error } = await supabase.from('categories').delete().eq('id', id);
+    if (error) throw error;
+    return { success: true, data };
   } catch (e) {
-    console.warn('Delete category cloud error:', e);
+    console.error('Delete category error:', e);
+    return { success: false, error: e };
   }
 }
 
@@ -86,7 +102,13 @@ export async function fetchProducts() {
       .select('*')
       .eq('is_active', true)
       .order('created_at', { ascending: false });
-    if (!error && data && data.length > 0) {
+
+    if (error) {
+      console.error('Supabase fetchProducts error:', error);
+      throw error;
+    }
+
+    if (data && data.length > 0) {
       const mapped = data.map(p => ({
         id: p.id,
         categoryId: p.category_id,
@@ -104,7 +126,7 @@ export async function fetchProducts() {
       return mapped;
     }
   } catch (e) {
-    console.warn('Supabase fetchProducts notice:', e);
+    console.warn('Supabase fetchProducts fallback to local:', e);
   }
 
   // Local fallback
@@ -128,24 +150,33 @@ export async function upsertProduct(prod) {
       is_featured: prod.isFeatured || false,
       is_active: true
     };
-    await supabase.from('products').upsert(row);
+    const { data, error } = await supabase.from('products').upsert(row);
+    if (error) {
+      console.error('Upsert product cloud error:', error);
+      throw error;
+    }
+    return { success: true, data };
   } catch (e) {
-    console.warn('Upsert product cloud error:', e);
+    console.error('Upsert product exception:', e);
+    return { success: false, error: e };
   }
 }
 
 export async function deleteProduct(id) {
   try {
-    await supabase.from('products').delete().eq('id', id);
+    const { data, error } = await supabase.from('products').delete().eq('id', id);
+    if (error) throw error;
+    return { success: true, data };
   } catch (e) {
-    console.warn('Delete product cloud error:', e);
+    console.error('Delete product error:', e);
+    return { success: false, error: e };
   }
 }
 
 // ── Enquiries / Orders ──
 export async function submitEnquiry(enquiry) {
   try {
-    await supabase.from('enquiries').insert([{
+    const { data, error } = await supabase.from('enquiries').insert([{
       customer_name: enquiry.name || 'Website Customer',
       customer_phone: enquiry.phone || '',
       customer_city: enquiry.city || '',
@@ -154,6 +185,7 @@ export async function submitEnquiry(enquiry) {
       enquiry_channel: 'whatsapp',
       status: 'pending'
     }]);
+    if (error) console.error('Enquiry insert error:', error);
   } catch (e) {
     console.warn('Submit enquiry notice:', e);
   }
