@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <title>Products | SP Traders Sivakasi — Wholesale & Retail Crackers</title>
+  <meta name="description" content="Browse our full range of Sivakasi fireworks — sparklers, flower pots, ground chakkars, rockets, aerial shots and gift boxes at wholesale rates.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night: { DEFAULT: '#0F0A1E', 2: '#1A1233', 3: '#251B44' },
+            gold: { DEFAULT: '#E8A63D', soft: '#F4CE84', glow: 'rgba(232,166,61,0.25)' },
+            maroon: { DEFAULT: '#8C1D2F', deep: '#6B1522' },
+            paper: { DEFAULT: '#FBF3E2', dim: '#F3E8D3' },
+            ink: { DEFAULT: '#2A2018', soft: '#6B5F50' },
+          },
+          fontFamily: {
+            display: ['Fraunces', 'serif'],
+            body: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-night text-paper font-body">
+
+  <!-- ══════ TOP STRIP ══════ -->
+  <div class="bg-night-2 border-b border-gold/10 py-2.5">
+    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center flex-wrap gap-2 text-sm text-paper/80">
+      <div class="flex gap-5 flex-wrap">
+        <span>📍 Sivakasi, Tamil Nadu</span>
+        <a href="tel:+919443594447" class="hover:text-gold transition-colors">📞 +91 94435 94447</a>
+      </div>
+      <span class="hidden sm:inline">Wholesale & Retail · Direct from the factory town</span>
+    </div>
+  </div>
+
+  <!-- ══════ HEADER ══════ -->
+  <header class="sticky top-0 z-50 glass border-b border-gold/10" id="siteHeader">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="images/logo.png" alt="SP Traders" class="h-12 w-auto">
+      </a>
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="index.html" class="text-sm font-semibold text-paper/80 hover:text-gold transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gold after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">Home</a>
+        <a href="products.html" class="text-sm font-semibold text-gold relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gold after:scale-x-100 after:origin-left">Products</a>
+        <a href="index.html#about" class="text-sm font-semibold text-paper/80 hover:text-gold transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gold after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">About</a>
+        <a href="index.html#contact" class="text-sm font-semibold text-paper/80 hover:text-gold transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gold after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">Contact</a>
+        <a href="admin.html" class="text-xs font-semibold text-paper/40 hover:text-gold/80 transition-colors border border-white/10 px-2.5 py-1 rounded-md">Admin</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <button id="cartOpenBtn" class="flex items-center gap-2 bg-gold text-night px-4 py-2.5 rounded-lg font-bold text-sm hover:bg-gold-soft transition-colors shine">
+          🧾 Enquiry <span id="cartCount" class="bg-night text-gold text-xs font-extrabold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        </button>
+        <button id="menuToggle" class="md:hidden text-2xl text-paper" aria-label="Toggle menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════ MOBILE NAV ══════ -->
+  <div class="mobile-nav" id="mobileNav">
+    <button id="mobileNavClose" class="absolute top-6 right-6 text-3xl text-paper">✕</button>
+    <a href="index.html" class="text-2xl font-display font-bold text-paper/80 hover:text-gold transition-colors">Home</a>
+    <a href="products.html" class="text-2xl font-display font-bold text-gold">Products</a>
+    <a href="index.html#about" class="text-2xl font-display font-bold text-paper/80 hover:text-gold transition-colors">About</a>
+    <a href="index.html#contact" class="text-2xl font-display font-bold text-paper/80 hover:text-gold transition-colors">Contact</a>
+    <a href="admin.html" class="text-xl font-display font-semibold text-paper/60 hover:text-gold transition-colors mt-4">Admin Portal</a>
+  </div>
+
+  <main>
+    <!-- ══════ PAGE HERO ══════ -->
+    <section class="relative py-16 md:py-20 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-night-2 to-night"></div>
+      <div class="absolute inset-0 opacity-10" style="background-image:url('images/banner.jpg');background-size:cover;background-position:center;"></div>
+      <div class="relative z-10 max-w-7xl mx-auto px-6">
+        <div class="flex items-center gap-2 text-sm text-paper/40 mb-3">
+          <a href="index.html" class="hover:text-gold transition-colors">Home</a>
+          <span>/</span>
+          <span class="text-gold">Products</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-paper reveal">Our <em class="gradient-text italic">Product Collection</em></h1>
+        <p class="text-paper/60 mt-4 max-w-xl leading-relaxed reveal" style="transition-delay:150ms">Browse our complete range of Sivakasi fireworks. Add items to your enquiry and WhatsApp us for pricing.</p>
+      </div>
+    </section>
+
+    <!-- ══════ PRODUCTS SECTION ══════ -->
+    <section class="py-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <!-- Search & Filters -->
+        <div class="flex flex-col md:flex-row gap-6 mb-10 reveal">
+          <!-- Search Bar -->
+          <div class="flex-1 relative">
+            <input type="text" id="searchInput" placeholder="Search products..." class="w-full bg-night-2 border border-gold/15 rounded-xl px-5 py-3.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold/40 transition-colors text-sm">
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-paper/30">🔍</span>
+          </div>
+          <!-- Sort -->
+          <select id="sortSelect" class="bg-night-2 border border-gold/15 rounded-xl px-5 py-3.5 text-paper text-sm focus:outline-none focus:border-gold/40 transition-colors cursor-pointer">
+            <option value="default">Sort by: Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="discount">Highest Discount</option>
+            <option value="name">Name: A to Z</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+          <!-- Category Sidebar -->
+          <aside class="lg:w-64 shrink-0">
+            <div class="glass rounded-xl p-5 sticky top-28">
+              <h3 class="font-display text-base font-bold text-paper mb-4">Categories</h3>
+              <div class="flex flex-row flex-wrap lg:flex-col gap-2" id="catFilters"></div>
+            </div>
+          </aside>
+
+          <!-- Product Grid -->
+          <div class="flex-1">
+            <div class="flex justify-between items-center mb-6">
+              <p class="text-paper/50 text-sm" id="productCountText">Showing all products</p>
+              <div class="flex gap-2">
+                <button id="gridViewBtn" class="w-9 h-9 rounded-lg border border-gold/20 text-paper/60 flex items-center justify-center hover:border-gold/40 transition-colors text-sm active-view" title="Grid view">⊞</button>
+                <button id="listViewBtn" class="w-9 h-9 rounded-lg border border-paper/10 text-paper/30 flex items-center justify-center hover:border-gold/40 transition-colors text-sm" title="List view">☰</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 stagger-children" id="productGrid"></div>
+            <div id="noResults" class="hidden text-center py-16">
+              <p class="text-5xl mb-4">🔍</p>
+              <p class="text-paper/60 text-lg font-display font-bold">No products found</p>
+              <p class="text-paper/40 text-sm mt-2">Try adjusting your search or filter.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════ FOOTER ══════ -->
+  <footer class="bg-night-2 border-t border-gold/10 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 pb-10">
+        <div>
+          <div class="font-display text-2xl font-bold text-paper mb-3">SP Traders</div>
+          <p class="text-paper/50 text-sm leading-relaxed">Wholesale and retail fireworks from Sivakasi, Tamil Nadu — sold responsibly, delivered honestly.</p>
+        </div>
+        <div>
+          <h4 class="font-display text-base font-bold text-paper mb-5">Quick Links</h4>
+          <ul class="space-y-3">
+            <li><a href="index.html" class="text-paper/50 text-sm hover:text-gold transition-colors">Home</a></li>
+            <li><a href="products.html" class="text-paper/50 text-sm hover:text-gold transition-colors">Products</a></li>
+            <li><a href="index.html#about" class="text-paper/50 text-sm hover:text-gold transition-colors">About</a></li>
+            <li><a href="index.html#contact" class="text-paper/50 text-sm hover:text-gold transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-display text-base font-bold text-paper mb-5">Contact</h4>
+          <ul class="space-y-3 text-sm text-paper/50">
+            <li>854/D, P.K.N Road, Sivakasi - 626189</li>
+            <li><a href="tel:+919443594447" class="hover:text-gold transition-colors">+91 94435 94447</a></li>
+            <li><a href="mailto:sptraderssivakasi@gmail.com" class="hover:text-gold transition-colors">sptraderssivakasi@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-paper/10 pt-6 flex flex-wrap justify-between gap-4 text-xs text-paper/30">
+        <span>© 2026 SP Traders, Sivakasi. All rights reserved.</span>
+        <span>Fireworks sold subject to applicable state licences and Supreme Court guidelines.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════ FLOATING BUTTONS ══════ -->
+  <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+    <a href="tel:+919443594447" class="w-12 h-12 rounded-full bg-maroon text-paper flex items-center justify-center text-lg shadow-lg hover:scale-110 transition-transform" aria-label="Call us">📞</a>
+    <a href="https://wa.me/919443594447" target="_blank" rel="noopener" class="wa-float w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center text-2xl shadow-lg" aria-label="WhatsApp us">💬</a>
+  </div>
+
+  <!-- ══════ ENQUIRY DRAWER ══════ -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer-panel" id="drawerPanel">
+    <div class="flex justify-between items-center px-6 py-5 border-b border-gold/15">
+      <h3 class="font-display text-xl font-bold text-paper">Your Enquiry List</h3>
+      <button id="drawerClose" class="text-2xl text-paper/60 hover:text-paper transition-colors">✕</button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-6 py-4" id="drawerBody"></div>
+    <div class="px-6 py-5 border-t border-gold/15">
+      <button id="sendWaBtn" class="w-full bg-[#25D366] text-white py-3.5 rounded-lg font-bold text-base flex items-center justify-center gap-2 hover:bg-[#22c35e] transition-colors">
+        💬 Send Enquiry on WhatsApp
+      </button>
+      <p class="text-paper/40 text-xs mt-3 leading-relaxed">No payment is taken here. Sending the list opens WhatsApp with your items so we can confirm price and availability.</p>
+    </div>
+  </aside>
+
+  <!-- ══════ SCRIPTS ══════ -->
+  <script src="js/store.js"></script>
+  <script>
+  (function(){
+    /* ── Mobile Nav ── */
+    const mobileNav = document.getElementById('mobileNav');
+    document.getElementById('menuToggle').addEventListener('click', () => mobileNav.classList.add('open'));
+    document.getElementById('mobileNavClose').addEventListener('click', () => mobileNav.classList.remove('open'));
+
+    /* ── State ── */
+    let activeCat = 'all';
+    let searchQuery = '';
+    let sortMode = 'default';
+    let isListView = false;
+
+    // Check URL param for category
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('cat')) activeCat = params.get('cat');
+
+    /* ── Category Filters ── */
+    const catFilters = document.getElementById('catFilters');
+    const categories = SP_STORE.getCategories();
+
+    function renderFilters() {
+      catFilters.innerHTML = '';
+      // "All" button
+      const allBtn = document.createElement('button');
+      allBtn.className = `px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${activeCat === 'all' ? 'bg-gold text-night' : 'bg-night-3/50 text-paper/60 hover:text-paper hover:bg-night-3'}`;
+      allBtn.textContent = `All (${SP_STORE.getProducts().length})`;
+      allBtn.addEventListener('click', () => { activeCat = 'all'; renderFilters(); renderProducts(); });
+      catFilters.appendChild(allBtn);
+
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        const count = SP_STORE.getProductsByCategory(cat.id).length;
+        btn.className = `px-4 py-2.5 rounded-lg text-sm font-bold transition-all text-left ${activeCat === cat.id ? 'bg-gold text-night' : 'bg-night-3/50 text-paper/60 hover:text-paper hover:bg-night-3'}`;
+        btn.textContent = `${cat.name} (${count})`;
+        btn.addEventListener('click', () => { activeCat = cat.id; renderFilters(); renderProducts(); });
+        catFilters.appendChild(btn);
+      });
+    }
+
+    /* ── Product Grid ── */
+    const productGrid = document.getElementById('productGrid');
+    const noResults = document.getElementById('noResults');
+    const productCountText = document.getElementById('productCountText');
+
+    function renderProducts() {
+      let list = activeCat === 'all' ? SP_STORE.getProducts() : SP_STORE.getProductsByCategory(activeCat);
+
+      // Search filter
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.shortDesc.toLowerCase().includes(q) || SP_STORE.getCategoryName(p.categoryId).toLowerCase().includes(q));
+      }
+
+      // Sort
+      switch (sortMode) {
+        case 'price-low': list.sort((a,b) => a.price - b.price); break;
+        case 'price-high': list.sort((a,b) => b.price - a.price); break;
+        case 'discount': list.sort((a,b) => SP_STORE.discountPct(b.mrp, b.price) - SP_STORE.discountPct(a.mrp, a.price)); break;
+        case 'name': list.sort((a,b) => a.name.localeCompare(b.name)); break;
+      }
+
+      productCountText.textContent = `Showing ${list.length} product${list.length !== 1 ? 's' : ''}`;
+
+      if (list.length === 0) {
+        productGrid.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+      }
+      noResults.classList.add('hidden');
+
+      // Update grid layout
+      if (isListView) {
+        productGrid.className = 'flex flex-col gap-4 stagger-children';
+      } else {
+        productGrid.className = 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 stagger-children';
+      }
+
+      productGrid.innerHTML = '';
+      const cart = SP_STORE.getCart();
+
+      list.forEach((p, idx) => {
+        const disc = SP_STORE.discountPct(p.mrp, p.price);
+        const inCart = cart.find(i => i.id === p.id);
+
+        if (isListView) {
+          // List view card
+          const card = document.createElement('div');
+          card.className = 'glass rounded-xl p-5 flex gap-5 items-center hover:border-gold/30 transition-all group';
+          card.innerHTML = `
+            <div class="w-20 h-20 rounded-lg bg-night-3 flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">🎆</div>
+            <div class="flex-1 min-w-0">
+              <span class="text-gold/60 text-xs font-semibold">${SP_STORE.getCategoryName(p.categoryId)}</span>
+              <h3 class="font-display text-base font-bold text-paper truncate group-hover:text-gold transition-colors">${p.name}</h3>
+              <p class="text-paper/50 text-xs mt-0.5 truncate">${p.shortDesc}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="flex items-baseline gap-2 justify-end">
+                <span class="font-display text-xl font-bold text-gold">₹${p.price}</span>
+                <span class="text-paper/40 text-sm line-through">₹${p.mrp}</span>
+              </div>
+              <span class="text-xs font-bold text-green-400">${disc}% OFF</span>
+            </div>
+            <div class="flex flex-col gap-2 shrink-0">
+              <button onclick="handleAddToCart('${p.id}')" class="add-to-cart-btn px-4 py-2 rounded-lg text-sm font-bold transition-all ${inCart ? 'bg-gold text-night' : 'bg-gold/10 border border-gold/30 text-gold hover:bg-gold hover:text-night'}" data-id="${p.id}">
+                ${inCart ? '✓ Added' : '+ Add'}
+              </button>
+              <a href="product-detail.html?id=${p.id}" class="px-4 py-2 rounded-lg border border-paper/10 text-paper/60 text-center hover:text-gold hover:border-gold/30 transition-all text-sm">View</a>
+            </div>
+          `;
+          productGrid.appendChild(card);
+        } else {
+          // Grid view card
+          const card = document.createElement('div');
+          card.className = 'glass rounded-xl overflow-hidden group hover:border-gold/30 transition-all duration-300 tilt-card';
+          card.innerHTML = `
+            <div class="relative bg-night-3 h-44 flex items-center justify-center overflow-hidden">
+              <span class="text-5xl group-hover:scale-110 transition-transform duration-500">🎆</span>
+              <span class="discount-badge bg-gold text-night text-xs font-extrabold px-2.5 py-1 rounded-md">${disc}% OFF</span>
+            </div>
+            <div class="p-5">
+              <span class="text-gold/60 text-xs font-semibold">${SP_STORE.getCategoryName(p.categoryId)}</span>
+              <h3 class="font-display text-base font-bold text-paper mt-1 group-hover:text-gold transition-colors">${p.name}</h3>
+              <p class="text-paper/50 text-xs mt-1.5 line-clamp-2">${p.shortDesc}</p>
+              <div class="flex items-baseline gap-3 mt-3">
+                <span class="font-display text-xl font-bold text-gold">₹${p.price}</span>
+                <span class="text-paper/40 text-sm line-through">₹${p.mrp}</span>
+              </div>
+              <div class="flex gap-2 mt-4">
+                <button onclick="handleAddToCart('${p.id}')" class="add-to-cart-btn flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${inCart ? 'bg-gold text-night' : 'bg-gold/10 border border-gold/30 text-gold hover:bg-gold hover:text-night'}" data-id="${p.id}">
+                  ${inCart ? '✓ Added to Enquiry' : '+ Add to Enquiry'}
+                </button>
+                <a href="product-detail.html?id=${p.id}" class="px-3 py-2.5 rounded-lg border border-paper/10 text-paper/60 hover:text-gold hover:border-gold/30 transition-all text-sm flex items-center">
+                  View
+                </a>
+              </div>
+            </div>
+          `;
+          productGrid.appendChild(card);
+        }
+      });
+
+      // Re-attach tilt for new cards
+      if (!isListView) document.querySelectorAll('.tilt-card').forEach(attachTilt);
+
+      // Re-trigger stagger
+      setTimeout(() => {
+        document.querySelectorAll('.stagger-children').forEach(el => {
+          el.classList.remove('visible');
+          void el.offsetWidth;
+          el.classList.add('visible');
+        });
+      }, 50);
+    }
+
+    /* ── Search ── */
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchQuery = searchInput.value.trim();
+        renderProducts();
+      }, 250);
+    });
+
+    /* ── Sort ── */
+    document.getElementById('sortSelect').addEventListener('change', (e) => {
+      sortMode = e.target.value;
+      renderProducts();
+    });
+
+    /* ── View Toggle ── */
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+    gridBtn.addEventListener('click', () => {
+      isListView = false;
+      gridBtn.classList.add('border-gold/20', 'text-paper/60');
+      gridBtn.classList.remove('border-paper/10', 'text-paper/30');
+      listBtn.classList.add('border-paper/10', 'text-paper/30');
+      listBtn.classList.remove('border-gold/20', 'text-paper/60');
+      renderProducts();
+    });
+    listBtn.addEventListener('click', () => {
+      isListView = true;
+      listBtn.classList.add('border-gold/20', 'text-paper/60');
+      listBtn.classList.remove('border-paper/10', 'text-paper/30');
+      gridBtn.classList.add('border-paper/10', 'text-paper/30');
+      gridBtn.classList.remove('border-gold/20', 'text-paper/60');
+      renderProducts();
+    });
+
+    /* ── Add to Cart handler ── */
+    window.handleAddToCart = function(prodId) {
+      const prod = SP_STORE.getProduct(prodId);
+      if (!prod) return;
+      SP_STORE.addToCart(prod);
+      updateCartUI();
+      renderProducts();
+    };
+
+    /* ── Enquiry Drawer ── */
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const drawerPanel = document.getElementById('drawerPanel');
+    const drawerBody = document.getElementById('drawerBody');
+
+    function openDrawer() { drawerOverlay.classList.add('open'); drawerPanel.classList.add('open'); }
+    function closeDrawer() { drawerOverlay.classList.remove('open'); drawerPanel.classList.remove('open'); }
+
+    document.getElementById('cartOpenBtn').addEventListener('click', openDrawer);
+    document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+    drawerOverlay.addEventListener('click', closeDrawer);
+
+    function updateCartUI() {
+      const cart = SP_STORE.getCart();
+      document.getElementById('cartCount').textContent = cart.reduce((s,i) => s + i.qty, 0);
+      if (cart.length === 0) {
+        drawerBody.innerHTML = '<div class="text-center text-paper/40 py-10"><p class="text-3xl mb-3">🧾</p><p>Your enquiry list is empty.</p></div>';
+        return;
+      }
+      drawerBody.innerHTML = '';
+      cart.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between items-start py-4 border-b border-paper/10';
+        row.innerHTML = `
+          <div>
+            <div class="font-bold text-sm text-paper">${item.name}</div>
+            <div class="text-xs text-paper/50 mt-1">${item.meta} · ₹${item.price} each</div>
+            <div class="flex items-center gap-3 mt-2">
+              <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 rounded border border-paper/20 text-paper/80 hover:border-gold transition-colors text-sm font-bold">−</button>
+              <span class="text-sm font-bold text-paper">${item.qty}</span>
+              <button onclick="changeQty('${item.id}', 1)" class="w-7 h-7 rounded border border-paper/20 text-paper/80 hover:border-gold transition-colors text-sm font-bold">+</button>
+            </div>
+          </div>
+          <button onclick="removeItem('${item.id}')" class="text-maroon text-xs font-bold hover:text-red-400 transition-colors mt-1">Remove</button>
+        `;
+        drawerBody.appendChild(row);
+      });
+    }
+    window.changeQty = function(id, delta) {
+      const cart = SP_STORE.getCart();
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+      if (item.qty + delta <= 0) SP_STORE.removeFromCart(id); else SP_STORE.updateCartQty(id, item.qty + delta);
+      updateCartUI(); renderProducts();
+    };
+    window.removeItem = function(id) { SP_STORE.removeFromCart(id); updateCartUI(); renderProducts(); };
+
+    document.getElementById('sendWaBtn').addEventListener('click', () => {
+      const cart = SP_STORE.getCart();
+      if (cart.length === 0) { alert('Please add at least one item first.'); return; }
+      SP_STORE.enquireMultiple(cart);
+    });
+
+    /* ── 3D Tilt ── */
+    function attachTilt(el) {
+      const s = 6;
+      el.addEventListener('mousemove', (e) => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `perspective(700px) rotateX(${(-py*s).toFixed(2)}deg) rotateY(${(px*s).toFixed(2)}deg) translateY(-3px)`;
+      });
+      el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+    }
+
+    /* ── Scroll Reveal ── */
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal, .stagger-children').forEach(el => io.observe(el));
+    } else {
+      document.querySelectorAll('.reveal, .stagger-children').forEach(el => el.classList.add('visible'));
+    }
+
+    /* ── Init ── */
+    renderFilters();
+    renderProducts();
+    updateCartUI();
+  })();
+  </script>
+</body>
+</html>

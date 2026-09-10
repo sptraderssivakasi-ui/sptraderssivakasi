@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <title>Admin Dashboard | SP Traders Sivakasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night: { DEFAULT: '#0F0A1E', 2: '#1A1233', 3: '#251B44', 4: '#130C28' },
+            gold: { DEFAULT: '#E8A63D', soft: '#F4CE84', glow: 'rgba(232,166,61,0.25)' },
+            maroon: { DEFAULT: '#8C1D2F', deep: '#6B1522' },
+            paper: { DEFAULT: '#FBF3E2', dim: '#F3E8D3' },
+            ink: { DEFAULT: '#2A2018', soft: '#6B5F50' },
+          },
+          fontFamily: {
+            display: ['Fraunces', 'serif'],
+            body: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-night text-paper font-body min-h-screen flex flex-col">
+
+  <!-- ══════ TOP APP BAR ══════ -->
+  <header class="bg-night-2 border-b border-gold/15 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2">
+          <img src="images/logo.png" alt="SP Traders" class="h-10 w-auto">
+        </a>
+        <span class="bg-gold/10 text-gold border border-gold/30 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+          Admin Portal
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-xs font-semibold text-paper/70 hover:text-gold transition-colors flex items-center gap-1.5 bg-night-3 px-3 py-1.5 rounded-lg border border-white/5">
+          <span>🌐</span> <span class="hidden sm:inline">Live Website</span>
+        </a>
+        <a href="products.html" class="text-xs font-semibold text-paper/70 hover:text-gold transition-colors flex items-center gap-1.5 bg-night-3 px-3 py-1.5 rounded-lg border border-white/5">
+          <span>🎆</span> <span class="hidden sm:inline">Products Page</span>
+        </a>
+        <button id="resetDemoBtn" class="text-xs font-semibold text-maroon hover:text-red-400 transition-colors bg-maroon/10 border border-maroon/30 px-3 py-1.5 rounded-lg">
+          Reset Demo Data
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════ MAIN DASHBOARD LAYOUT ══════ -->
+  <main class="max-w-7xl mx-auto px-6 py-8 flex-grow w-full">
+    
+    <!-- DASHBOARD HEADER & STATS -->
+    <div class="mb-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 class="font-display text-3xl font-bold text-paper">Product & Catalog Management</h1>
+          <p class="text-sm text-paper/60 mt-1">Manage categories, firework items, pricing, short descriptions, and WhatsApp enquiry details dynamically.</p>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <button id="openAddCategoryBtn" class="bg-night-3 border border-gold/30 hover:border-gold text-gold font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2">
+            <span>➕</span> Add Category
+          </button>
+          <button id="openAddProductBtn" class="bg-gold hover:bg-gold-soft text-night font-bold px-5 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2 shadow-lg shine">
+            <span>✨</span> Add New Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Counters -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-night-2 border border-gold/15 rounded-2xl p-5 relative overflow-hidden">
+          <div class="text-paper/40 text-xs font-semibold uppercase tracking-wider">Total Products</div>
+          <div class="text-3xl font-bold text-paper mt-2" id="statTotalProducts">0</div>
+          <div class="text-xs text-gold mt-1">Active in store</div>
+          <div class="absolute right-4 bottom-4 text-3xl opacity-20">🎆</div>
+        </div>
+        <div class="bg-night-2 border border-gold/15 rounded-2xl p-5 relative overflow-hidden">
+          <div class="text-paper/40 text-xs font-semibold uppercase tracking-wider">Categories</div>
+          <div class="text-3xl font-bold text-paper mt-2" id="statTotalCategories">0</div>
+          <div class="text-xs text-gold mt-1">Product Groups</div>
+          <div class="absolute right-4 bottom-4 text-3xl opacity-20">📑</div>
+        </div>
+        <div class="bg-night-2 border border-gold/15 rounded-2xl p-5 relative overflow-hidden">
+          <div class="text-paper/40 text-xs font-semibold uppercase tracking-wider">Avg Selling Price</div>
+          <div class="text-3xl font-bold text-gold mt-2" id="statAvgPrice">₹0</div>
+          <div class="text-xs text-paper/40 mt-1">Wholesale average</div>
+          <div class="absolute right-4 bottom-4 text-3xl opacity-20">🏷️</div>
+        </div>
+        <div class="bg-night-2 border border-gold/15 rounded-2xl p-5 relative overflow-hidden">
+          <div class="text-paper/40 text-xs font-semibold uppercase tracking-wider">WhatsApp Number</div>
+          <div class="text-lg font-bold text-emerald-400 mt-2 font-mono" id="statWaNumber">+91 94435 94447</div>
+          <div class="text-xs text-paper/40 mt-1">Direct enquiry redirect</div>
+          <div class="absolute right-4 bottom-4 text-3xl opacity-20">💬</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS NAVIGATION -->
+    <div class="flex border-b border-gold/20 mb-6 gap-2">
+      <button id="tabBtnProducts" class="tab-btn active px-6 py-3 font-bold text-sm text-gold border-b-2 border-gold transition-all flex items-center gap-2">
+        <span>📦</span> Products (<span id="prodTabCount">0</span>)
+      </button>
+      <button id="tabBtnCategories" class="tab-btn px-6 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
+        <span>📑</span> Categories (<span id="catTabCount">0</span>)
+      </button>
+      <button id="tabBtnSql" class="tab-btn px-6 py-3 font-bold text-sm text-paper/60 hover:text-paper border-b-2 border-transparent transition-all flex items-center gap-2">
+        <span>🗄️</span> SQL DB Schema
+      </button>
+    </div>
+
+    <!-- ══════ SECTION: PRODUCTS TAB ══════ -->
+    <div id="sectionProducts" class="space-y-6">
+      
+      <!-- Filters and Search Bar -->
+      <div class="bg-night-2 border border-gold/15 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div class="flex-1 w-full relative">
+          <input type="text" id="adminSearchInput" placeholder="Search by name, description, unit..." class="w-full bg-night-3 border border-gold/15 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 text-sm focus:outline-none focus:border-gold/50">
+          <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-paper/30">🔍</span>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <select id="adminCategoryFilter" class="bg-night-3 border border-gold/15 rounded-xl px-4 py-2.5 text-paper text-sm focus:outline-none focus:border-gold/50 flex-1 md:flex-initial">
+            <option value="all">All Categories</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Table View -->
+      <div class="bg-night-2 border border-gold/15 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-paper/80">
+            <thead class="bg-night-3 text-gold text-xs uppercase tracking-wider border-b border-gold/15">
+              <tr>
+                <th class="py-3.5 px-4 font-bold">Item</th>
+                <th class="py-3.5 px-4 font-bold">Category</th>
+                <th class="py-3.5 px-4 font-bold">Unit / Meta</th>
+                <th class="py-3.5 px-4 font-bold">Price (MRP / Sale)</th>
+                <th class="py-3.5 px-4 font-bold">Discount</th>
+                <th class="py-3.5 px-4 font-bold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody" class="divide-y divide-white/5">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        <div id="noProductsFound" class="hidden py-12 text-center text-paper/40 text-sm">
+          No products match your search or filter.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ SECTION: CATEGORIES TAB ══════ -->
+    <div id="sectionCategories" class="space-y-6 hidden">
+      <div class="flex justify-between items-center">
+        <h2 class="font-display text-xl font-bold text-paper">Product Categories</h2>
+        <button id="addCatBtn2" class="bg-gold hover:bg-gold-soft text-night font-bold px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>➕</span> New Category
+        </button>
+      </div>
+
+      <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ══════ SECTION: SQL DB SCHEMA TAB ══════ -->
+    <div id="sectionSql" class="space-y-6 hidden">
+      <div class="bg-night-2 border border-gold/15 rounded-2xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 class="font-display text-xl font-bold text-paper">Relational Database Schema (PostgreSQL / MySQL)</h2>
+            <p class="text-xs text-paper/60 mt-1">Best-practice production SQL script with tables for categories, products, images, and WhatsApp enquiry logs.</p>
+          </div>
+          <button id="copySqlBtn" class="bg-gold text-night hover:bg-gold-soft px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-2">
+            <span>📋</span> Copy SQL Query
+          </button>
+        </div>
+        <div class="relative bg-night-4 rounded-xl p-4 border border-white/10 font-mono text-xs text-paper/80 overflow-x-auto max-h-[500px]">
+          <pre id="sqlPreCode"><code>-- =====================================================================
+-- SP TRADERS SIVAKASI - FIREWORKS DATABASE SCHEMA (Production Ready)
+-- =====================================================================
+
+-- 1. CATEGORIES TABLE
+CREATE TABLE categories (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    image_url TEXT,
+    display_order INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. PRODUCTS TABLE
+CREATE TABLE products (
+    id VARCHAR(50) PRIMARY KEY,
+    category_id VARCHAR(50) NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+    short_desc VARCHAR(255),
+    description TEXT,
+    meta VARCHAR(100) NOT NULL DEFAULT '1 Box',
+    mrp NUMERIC(10, 2) NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    image_url TEXT,
+    is_featured BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. ENQUIRIES / LEADS TABLE (Tracks WhatsApp & Web Inquiries)
+CREATE TABLE enquiries (
+    id BIGSERIAL PRIMARY KEY,
+    customer_name VARCHAR(150),
+    customer_phone VARCHAR(30) NOT NULL,
+    customer_city VARCHAR(100),
+    total_estimated_amount NUMERIC(12, 2) DEFAULT 0,
+    enquiry_type VARCHAR(50) DEFAULT 'whatsapp',
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. ENQUIRY ITEMS TABLE
+CREATE TABLE enquiry_items (
+    id BIGSERIAL PRIMARY KEY,
+    enquiry_id BIGINT NOT NULL REFERENCES enquiries(id) ON DELETE CASCADE,
+    product_id VARCHAR(50) REFERENCES products(id) ON DELETE SET NULL,
+    product_name VARCHAR(255) NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    unit_price NUMERIC(10, 2) NOT NULL
+);
+
+-- 5. INDEXES FOR HIGH-PERFORMANCE SEARCH & FILTERING
+CREATE INDEX idx_products_category ON products(category_id);
+CREATE INDEX idx_products_active ON products(is_active);
+CREATE INDEX idx_categories_slug ON categories(slug);
+
+-- 6. SAMPLE SEED DATA INSERTION
+INSERT INTO categories (id, name, slug, image_url, display_order) VALUES
+('cat-1', 'Sparklers', 'sparklers', 'images/categories/sparklers.jpg', 1),
+('cat-2', 'Ground Chakkars', 'ground', 'images/categories/ground.jpg', 2),
+('cat-3', 'Flower Pots', 'flowerpots', 'images/categories/flowerpots.jpg', 3),
+('cat-4', 'Aerial Shots', 'aerial', 'images/categories/aerial.jpg', 4),
+('cat-5', 'Rockets', 'rockets', 'images/categories/rockets.jpg', 5),
+('cat-6', 'Sound Crackers', 'sound', 'images/categories/sound.jpg', 6),
+('cat-7', 'Kids Special', 'kids', 'images/categories/kids.jpg', 7),
+('cat-8', 'Gift Boxes', 'giftbox', 'images/categories/giftbox.jpg', 8);
+
+INSERT INTO products (id, category_id, name, slug, short_desc, description, meta, mrp, price) VALUES
+('sp1', 'cat-1', '7cm Electric Sparklers (Box of 10)', '7cm-electric-sparklers', 'Classic electric sparklers safe for all ages.', 'Premium quality 7cm electric sparklers from Sivakasi. Each box contains 10 sparklers that burn bright with a clean, steady flame.', 'Box · 10 pieces', 60.00, 42.00),
+('fp1', 'cat-3', 'Flower Pot – Small', 'flower-pot-small', 'Compact fountain with golden sparks.', 'A compact yet powerful flower pot that shoots golden sparks upward like a fountain. Perfect for small celebrations and safe to use.', 'Pack of 5', 200.00, 140.00),
+('ar1', 'cat-4', '30-Shot Colour Cake', '30-shot-colour-cake', '30 consecutive aerial colour shots.', 'Light up the sky with our 30-Shot Colour Cake! This spectacular aerial firework launches 30 consecutive shots of vibrant colours.', '1 piece', 900.00, 630.00),
+('gb1', 'cat-8', 'Family Gift Box – Silver', 'family-gift-box-silver', '42-item assorted family celebration pack.', 'The Silver Family Gift Box is the perfect all-in-one Diwali pack. Contains 42 assorted items including sparklers, pots, chakkars.', '42 items assorted', 2000.00, 1400.00);
+</code></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ══════ MODAL: ADD / EDIT PRODUCT ══════ -->
+  <div id="productModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-night-2 border border-gold/25 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 bg-night-3 border-b border-gold/15 flex justify-between items-center">
+        <h3 class="font-display text-xl font-bold text-paper" id="productModalTitle">Add New Product</h3>
+        <button id="closeProductModal" class="text-2xl text-paper/60 hover:text-paper">✕</button>
+      </div>
+      
+      <form id="productForm" class="p-6 overflow-y-auto space-y-4 flex-grow text-sm">
+        <input type="hidden" id="formProductId">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Product Name -->
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Product Name *</label>
+            <input type="text" id="formProdName" required placeholder="e.g. 15cm Deluxe Sparklers" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+          </div>
+
+          <!-- Category -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Category *</label>
+            <select id="formProdCategory" required class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+
+          <!-- Unit / Meta -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Unit / Packaging Meta *</label>
+            <input type="text" id="formProdMeta" required placeholder="e.g. Box of 10, Pack of 5" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+          </div>
+
+          <!-- MRP -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Original MRP (₹) *</label>
+            <input type="number" id="formProdMrp" min="1" step="any" required placeholder="100" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+          </div>
+
+          <!-- Selling Price -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Discounted Price (₹) *</label>
+            <input type="number" id="formProdPrice" min="1" step="any" required placeholder="70" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+          </div>
+
+          <!-- Short Description -->
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Short Description *</label>
+            <input type="text" id="formProdShortDesc" required placeholder="One-line summary for product cards" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+          </div>
+
+          <!-- Full Description -->
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Full Detailed Description</label>
+            <textarea id="formProdDesc" rows="3" placeholder="Full product details, Sivakasi safety specs, celebration usage..." class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold"></textarea>
+          </div>
+
+          <!-- Image URL -->
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Image URL (Optional)</label>
+            <input type="text" id="formProdImage" placeholder="e.g. images/products/sparkler.jpg or https://..." class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-white/10 flex justify-end gap-3">
+          <button type="button" id="cancelProductBtn" class="px-5 py-2.5 rounded-xl border border-white/10 text-paper/60 hover:text-paper">Cancel</button>
+          <button type="submit" class="bg-gold text-night font-bold px-6 py-2.5 rounded-xl hover:bg-gold-soft transition-colors">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════ MODAL: ADD / EDIT CATEGORY ══════ -->
+  <div id="categoryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-night-2 border border-gold/25 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 bg-night-3 border-b border-gold/15 flex justify-between items-center">
+        <h3 class="font-display text-xl font-bold text-paper" id="categoryModalTitle">Add Category</h3>
+        <button id="closeCategoryModal" class="text-2xl text-paper/60 hover:text-paper">✕</button>
+      </div>
+      
+      <form id="categoryForm" class="p-6 space-y-4 text-sm">
+        <input type="hidden" id="formCatId">
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Category Name *</label>
+          <input type="text" id="formCatName" required placeholder="e.g. Colour Matches" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Slug (URL friendly) *</label>
+          <input type="text" id="formCatSlug" required placeholder="e.g. colour-matches" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Image Path / URL</label>
+          <input type="text" id="formCatImage" placeholder="images/categories/name.jpg" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+        </div>
+
+        <div class="pt-4 border-t border-white/10 flex justify-end gap-3">
+          <button type="button" id="cancelCategoryBtn" class="px-5 py-2.5 rounded-xl border border-white/10 text-paper/60 hover:text-paper">Cancel</button>
+          <button type="submit" class="bg-gold text-night font-bold px-6 py-2.5 rounded-xl hover:bg-gold-soft transition-colors">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/store.js"></script>
+  <script>
+  (() => {
+    const categoryIcons = {
+      'cat-1': '✨',
+      'cat-2': '🌀',
+      'cat-3': '🌸',
+      'cat-4': '🎆',
+      'cat-5': '🚀',
+      'cat-6': '💥',
+      'cat-7': '🎉',
+      'cat-8': '🎁'
+    };
+
+    // Tabs
+    const tabProducts = document.getElementById('tabBtnProducts');
+    const tabCategories = document.getElementById('tabBtnCategories');
+    const tabSql = document.getElementById('tabBtnSql');
+
+    const secProducts = document.getElementById('sectionProducts');
+    const secCategories = document.getElementById('sectionCategories');
+    const secSql = document.getElementById('sectionSql');
+
+    function switchTab(activeBtn, activeSec) {
+      [tabProducts, tabCategories, tabSql].forEach(b => {
+        b.classList.remove('text-gold', 'border-gold');
+        b.classList.add('text-paper/60', 'border-transparent');
+      });
+      activeBtn.classList.remove('text-paper/60', 'border-transparent');
+      activeBtn.classList.add('text-gold', 'border-gold');
+
+      [secProducts, secCategories, secSql].forEach(s => s.classList.add('hidden'));
+      activeSec.classList.remove('hidden');
+    }
+
+    tabProducts.addEventListener('click', () => switchTab(tabProducts, secProducts));
+    tabCategories.addEventListener('click', () => switchTab(tabCategories, secCategories));
+    tabSql.addEventListener('click', () => switchTab(tabSql, secSql));
+
+    // Stats & Tables rendering
+    function refreshData() {
+      const products = SP_STORE.getProducts();
+      const categories = SP_STORE.getCategories();
+
+      document.getElementById('statTotalProducts').textContent = products.length;
+      document.getElementById('prodTabCount').textContent = products.length;
+      document.getElementById('statTotalCategories').textContent = categories.length;
+      document.getElementById('catTabCount').textContent = categories.length;
+
+      const avgPrice = products.length > 0 
+        ? Math.round(products.reduce((s, p) => s + p.price, 0) / products.length) 
+        : 0;
+      document.getElementById('statAvgPrice').textContent = `₹${avgPrice}`;
+
+      // Populate Category Filter dropdown
+      const catFilter = document.getElementById('adminCategoryFilter');
+      const currentCatVal = catFilter.value;
+      catFilter.innerHTML = '<option value="all">All Categories</option>';
+      categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        catFilter.appendChild(opt);
+      });
+      catFilter.value = currentCatVal;
+
+      // Populate Modal Category dropdown
+      const modalCatSelect = document.getElementById('formProdCategory');
+      modalCatSelect.innerHTML = '';
+      categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        modalCatSelect.appendChild(opt);
+      });
+
+      renderProductsTable();
+      renderCategoriesGrid();
+    }
+
+    // Filtered Products Table
+    function renderProductsTable() {
+      const products = SP_STORE.getProducts();
+      const query = document.getElementById('adminSearchInput').value.toLowerCase().trim();
+      const selectedCat = document.getElementById('adminCategoryFilter').value;
+
+      const tbody = document.getElementById('productsTableBody');
+      const noFound = document.getElementById('noProductsFound');
+      tbody.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchesCat = selectedCat === 'all' || p.categoryId === selectedCat;
+        const matchesQuery = !query || 
+          p.name.toLowerCase().includes(query) || 
+          (p.shortDesc && p.shortDesc.toLowerCase().includes(query)) ||
+          (p.meta && p.meta.toLowerCase().includes(query));
+        return matchesCat && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        noFound.classList.remove('hidden');
+      } else {
+        noFound.classList.add('hidden');
+      }
+
+      filtered.forEach(p => {
+        const catName = SP_STORE.getCategoryName(p.categoryId);
+        const discount = SP_STORE.discountPct(p.mrp, p.price);
+        const icon = categoryIcons[p.categoryId] || '🎆';
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-night-3/40 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-night-3 border border-white/10 flex items-center justify-center text-lg shrink-0">
+                ${icon}
+              </div>
+              <div class="min-w-0">
+                <div class="font-bold text-paper text-sm truncate max-w-[220px]">${p.name}</div>
+                <div class="text-xs text-paper/40 truncate max-w-[220px]">${p.shortDesc || ''}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <span class="bg-night-3 text-gold/90 text-xs px-2.5 py-1 rounded-md border border-white/5 whitespace-nowrap">
+              ${catName}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-xs text-paper/70 font-medium">
+            ${p.meta || '1 Unit'}
+          </td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            <span class="text-gold font-bold text-sm">₹${p.price}</span>
+            <span class="text-paper/40 line-through text-xs ml-1.5">₹${p.mrp}</span>
+          </td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            <span class="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded">
+              ${discount}% OFF
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-2">
+              <a href="product-detail.html?id=${p.id}" target="_blank" title="View Public Page" class="p-1.5 text-paper/50 hover:text-gold transition-colors">
+                👁️
+              </a>
+              <button onclick="handleEditProduct('${p.id}')" title="Edit Product" class="p-1.5 text-paper/50 hover:text-gold transition-colors">
+                ✏️
+              </button>
+              <button onclick="handleDeleteProduct('${p.id}')" title="Delete Product" class="p-1.5 text-paper/50 hover:text-red-400 transition-colors">
+                🗑️
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Categories Grid
+    function renderCategoriesGrid() {
+      const categories = SP_STORE.getCategories();
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = '';
+
+      categories.forEach(cat => {
+        const prodCount = SP_STORE.getProductsByCategory(cat.id).length;
+        const icon = categoryIcons[cat.id] || '📑';
+
+        const card = document.createElement('div');
+        card.className = 'bg-night-2 border border-gold/15 rounded-2xl p-5 hover:border-gold/40 transition-all flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-night-3 border border-gold/20 flex items-center justify-center text-2xl">
+                ${icon}
+              </div>
+              <span class="text-xs font-bold bg-gold/10 text-gold px-2.5 py-1 rounded-full border border-gold/20">
+                ${prodCount} Products
+              </span>
+            </div>
+            <h3 class="font-display font-bold text-paper text-lg">${cat.name}</h3>
+            <p class="text-xs font-mono text-paper/40 mt-1">Slug: ${cat.slug}</p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
+            <a href="products.html?cat=${cat.id}" target="_blank" class="text-xs text-gold hover:underline">View in Store →</a>
+            <div class="flex items-center gap-2">
+              <button onclick="handleEditCategory('${cat.id}')" class="text-xs text-paper/60 hover:text-gold px-2 py-1 bg-night-3 rounded border border-white/5">Edit</button>
+              <button onclick="handleDeleteCategory('${cat.id}')" class="text-xs text-maroon hover:text-red-400 px-2 py-1 bg-maroon/10 rounded border border-maroon/20">Delete</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Search & Filter Listeners
+    document.getElementById('adminSearchInput').addEventListener('input', renderProductsTable);
+    document.getElementById('adminCategoryFilter').addEventListener('change', renderProductsTable);
+
+    /* ── Product Modal Logic ── */
+    const productModal = document.getElementById('productModal');
+    const openAddProductBtn = document.getElementById('openAddProductBtn');
+    const closeProductModal = document.getElementById('closeProductModal');
+    const cancelProductBtn = document.getElementById('cancelProductBtn');
+    const productForm = document.getElementById('productForm');
+
+    function openProdModal(isEdit = false, prod = null) {
+      document.getElementById('productModalTitle').textContent = isEdit ? 'Edit Product' : 'Add New Product';
+      if (isEdit && prod) {
+        document.getElementById('formProductId').value = prod.id;
+        document.getElementById('formProdName').value = prod.name;
+        document.getElementById('formProdCategory').value = prod.categoryId;
+        document.getElementById('formProdMeta').value = prod.meta;
+        document.getElementById('formProdMrp').value = prod.mrp;
+        document.getElementById('formProdPrice').value = prod.price;
+        document.getElementById('formProdShortDesc').value = prod.shortDesc || '';
+        document.getElementById('formProdDesc').value = prod.description || '';
+        document.getElementById('formProdImage').value = prod.image || '';
+      } else {
+        productForm.reset();
+        document.getElementById('formProductId').value = '';
+      }
+      productModal.classList.remove('hidden');
+    }
+
+    function closeProdModal() {
+      productModal.classList.add('hidden');
+    }
+
+    openAddProductBtn.addEventListener('click', () => openProdModal(false));
+    closeProductModal.addEventListener('click', closeProdModal);
+    cancelProductBtn.addEventListener('click', closeProdModal);
+
+    productForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('formProductId').value;
+      const data = {
+        name: document.getElementById('formProdName').value.trim(),
+        categoryId: document.getElementById('formProdCategory').value,
+        meta: document.getElementById('formProdMeta').value.trim(),
+        mrp: parseFloat(document.getElementById('formProdMrp').value),
+        price: parseFloat(document.getElementById('formProdPrice').value),
+        shortDesc: document.getElementById('formProdShortDesc').value.trim(),
+        description: document.getElementById('formProdDesc').value.trim(),
+        image: document.getElementById('formProdImage').value.trim()
+      };
+
+      if (id) {
+        SP_STORE.updateProduct(id, data);
+      } else {
+        SP_STORE.addProduct(data);
+      }
+
+      closeProdModal();
+      refreshData();
+    });
+
+    window.handleEditProduct = function(id) {
+      const prod = SP_STORE.getProduct(id);
+      if (prod) openProdModal(true, prod);
+    };
+
+    window.handleDeleteProduct = function(id) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        SP_STORE.deleteProduct(id);
+        refreshData();
+      }
+    };
+
+    /* ── Category Modal Logic ── */
+    const categoryModal = document.getElementById('categoryModal');
+    const openAddCategoryBtn = document.getElementById('openAddCategoryBtn');
+    const addCatBtn2 = document.getElementById('addCatBtn2');
+    const closeCategoryModal = document.getElementById('closeCategoryModal');
+    const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+    const categoryForm = document.getElementById('categoryForm');
+
+    function openCatModal(isEdit = false, cat = null) {
+      document.getElementById('categoryModalTitle').textContent = isEdit ? 'Edit Category' : 'Add New Category';
+      if (isEdit && cat) {
+        document.getElementById('formCatId').value = cat.id;
+        document.getElementById('formCatName').value = cat.name;
+        document.getElementById('formCatSlug').value = cat.slug;
+        document.getElementById('formCatImage').value = cat.image || '';
+      } else {
+        categoryForm.reset();
+        document.getElementById('formCatId').value = '';
+      }
+      categoryModal.classList.remove('hidden');
+    }
+
+    function closeCatModal() {
+      categoryModal.classList.add('hidden');
+    }
+
+    openAddCategoryBtn.addEventListener('click', () => openCatModal(false));
+    addCatBtn2.addEventListener('click', () => openCatModal(false));
+    closeCategoryModal.addEventListener('click', closeCatModal);
+    cancelCategoryBtn.addEventListener('click', closeCatModal);
+
+    categoryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('formCatId').value;
+      const data = {
+        name: document.getElementById('formCatName').value.trim(),
+        slug: document.getElementById('formCatSlug').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        image: document.getElementById('formCatImage').value.trim()
+      };
+
+      if (id) {
+        SP_STORE.updateCategory(id, data);
+      } else {
+        SP_STORE.addCategory(data);
+      }
+
+      closeCatModal();
+      refreshData();
+    });
+
+    window.handleEditCategory = function(id) {
+      const cat = SP_STORE.getCategories().find(c => c.id === id);
+      if (cat) openCatModal(true, cat);
+    };
+
+    window.handleDeleteCategory = function(id) {
+      if (confirm('Warning: Deleting a category will also delete all products under it. Proceed?')) {
+        SP_STORE.deleteCategory(id);
+        refreshData();
+      }
+    };
+
+    /* ── Reset Demo Data ── */
+    document.getElementById('resetDemoBtn').addEventListener('click', () => {
+      if (confirm('Reset store back to the default Sivakasi product catalog?')) {
+        SP_STORE.resetToDefaults();
+        refreshData();
+      }
+    });
+
+    /* ── Copy SQL ── */
+    document.getElementById('copySqlBtn').addEventListener('click', () => {
+      const code = document.getElementById('sqlPreCode').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copySqlBtn');
+        btn.textContent = 'Copied! ✓';
+        setTimeout(() => btn.innerHTML = '<span>📋</span> Copy SQL Query', 2000);
+      });
+    });
+
+    // Initial Load
+    refreshData();
+  })();
+  </script>
+</body>
+</html>
