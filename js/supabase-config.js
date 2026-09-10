@@ -7,6 +7,9 @@
 const SUPABASE_DEFAULT_URL = 'https://websuabugmjknzmaqzfi.supabase.co';
 const SUPABASE_DEFAULT_ANON_KEY = 'sb_publishable_pioEQydt_VajxlN8J2Nqaw_W5ctH95S';
 
+let _cachedClient = null;
+let _cachedKey = '';
+
 const SP_SUPABASE = (() => {
   // Read from localStorage (if configured in Admin) or fallback to defaults
   function getCredentials() {
@@ -19,9 +22,11 @@ const SP_SUPABASE = (() => {
   function setCredentials(url, anonKey) {
     if (url) localStorage.setItem('sp_supabase_url', url.trim());
     if (anonKey) localStorage.setItem('sp_supabase_anon_key', anonKey.trim());
+    _cachedClient = null;
+    _cachedKey = '';
   }
 
-  // Create Client
+  // Create or return Singleton Client
   function getClient() {
     const creds = getCredentials();
     if (!creds.isConfigured) return null;
@@ -29,8 +34,26 @@ const SP_SUPABASE = (() => {
       console.warn('Supabase JS library not loaded.');
       return null;
     }
+    const currentKey = `${creds.url}___${creds.anonKey}`;
+    if (_cachedClient && _cachedKey === currentKey) {
+      return _cachedClient;
+    }
     try {
-      return window.supabase.createClient(creds.url, creds.anonKey);
+      _cachedClient = window.supabase.createClient(creds.url, creds.anonKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        },
+        global: {
+          headers: {
+            'apikey': creds.anonKey,
+            'Authorization': `Bearer ${creds.anonKey}`
+          }
+        }
+      });
+      _cachedKey = currentKey;
+      return _cachedClient;
     } catch (e) {
       console.error('Failed to initialize Supabase client:', e);
       return null;
