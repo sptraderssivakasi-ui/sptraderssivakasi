@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-night text-paper font-body antialiased selection:bg-gold selection:text-night;
+  }
+}
+
+/* Glassmorphism Styles */
+.glass {
+  background: rgba(26, 18, 51, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(232, 166, 61, 0.15);
+}
+
+.glass-card {
+  background: rgba(37, 27, 68, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card:hover {
+  border-color: rgba(232, 166, 61, 0.4);
+  box-shadow: 0 10px 30px -10px rgba(232, 166, 61, 0.2);
+}
+
+/* Glow Effect */
+.gold-glow {
+  box-shadow: 0 0 25px rgba(232, 166, 61, 0.3);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #F4CE84 0%, #E8A63D 50%, #C48220 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0F0A1E;
+}
+::-webkit-scrollbar-thumb {
+  background: #251B44;
+  border-radius: 4px;
+  border: 1px solid rgba(232, 166, 61, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E8A63D;
+}
+
+/* Ticker Animation */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: flex;
+  width: 200%;
+  animation: ticker 35s linear infinite;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Float Sparkle */
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+}
+
+.particle-spark {
+  animation: floatUp 4s ease-in-out infinite;
+}
