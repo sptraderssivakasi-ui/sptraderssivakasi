@@ -392,10 +392,13 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
             <textarea id="formProdDesc" rows="3" placeholder="Full product details, Sivakasi safety specs, celebration usage..." class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold"></textarea>
           </div>
 
-          <!-- Image URL -->
+          <!-- Product image upload -->
           <div class="sm:col-span-2">
-            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Image URL (Optional)</label>
-            <input type="text" id="formProdImage" placeholder="e.g. images/products/sparkler.jpg or https://..." class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper placeholder-paper/30 focus:outline-none focus:border-gold">
+            <label class="block text-xs font-bold uppercase tracking-wider text-gold mb-1.5">Product Image</label>
+            <input type="file" id="formProdImage" accept="image/*" class="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper text-sm">
+            <img id="formProdImagePreview" class="hidden mt-3 h-20 w-20 rounded-xl object-cover border border-white/10" alt="Product preview">
+            <button type="button" id="removeProdImage" class="hidden mt-2 text-xs font-bold text-red-300">Remove image</button>
+            <p class="mt-1 text-[11px] text-paper/40">JPG, PNG, WEBP · maximum 10 MB</p>
           </div>
         </div>
 
@@ -764,6 +767,8 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
     const cancelProductBtn = document.getElementById('cancelProductBtn');
     const productForm = document.getElementById('productForm');
 
+    let selectedProductImage = null;
+    let existingProductImage = '';
     function openProdModal(isEdit = false, prod = null) {
       document.getElementById('productModalTitle').textContent = isEdit ? 'Edit Product' : 'Add New Product';
       if (isEdit && prod) {
@@ -775,10 +780,18 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
         document.getElementById('formProdPrice').value = prod.price;
         document.getElementById('formProdShortDesc').value = prod.shortDesc || '';
         document.getElementById('formProdDesc').value = prod.description || '';
-        document.getElementById('formProdImage').value = prod.image || '';
+        selectedProductImage = null;
+        existingProductImage = prod.image || '';
+        document.getElementById('formProdImage').value = '';
+        const preview = document.getElementById('formProdImagePreview');
+        preview.src = prod.image || '';
+        preview.classList.toggle('hidden', !prod.image);
       } else {
         productForm.reset();
         document.getElementById('formProductId').value = '';
+        selectedProductImage = null;
+        existingProductImage = '';
+        document.getElementById('formProdImagePreview').classList.add('hidden');
       }
       productModal.classList.remove('hidden');
     }
@@ -790,6 +803,28 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
     openAddProductBtn.addEventListener('click', () => openProdModal(false));
     closeProductModal.addEventListener('click', closeProdModal);
     cancelProductBtn.addEventListener('click', closeProdModal);
+    document.getElementById('formProdImage').addEventListener('change', (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) {
+        showToast('Choose an image smaller than 10 MB.', 'X');
+        event.target.value = '';
+        return;
+      }
+      selectedProductImage = file;
+      const preview = document.getElementById('formProdImagePreview');
+      preview.src = URL.createObjectURL(file);
+      preview.classList.remove('hidden');
+      document.getElementById('removeProdImage').classList.remove('hidden');
+    });
+    document.getElementById('removeProdImage').addEventListener('click', async () => {
+      if (existingProductImage) await SP_SUPABASE.deleteProductImage(existingProductImage);
+      selectedProductImage = null;
+      existingProductImage = '';
+      document.getElementById('formProdImage').value = '';
+      document.getElementById('formProdImagePreview').classList.add('hidden');
+      document.getElementById('removeProdImage').classList.add('hidden');
+    });
 
     productForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -802,8 +837,9 @@ INSERT INTO products (id, category_id, name, slug, short_desc, description, meta
         price: parseFloat(document.getElementById('formProdPrice').value),
         shortDesc: document.getElementById('formProdShortDesc').value.trim(),
         description: document.getElementById('formProdDesc').value.trim(),
-        image: document.getElementById('formProdImage').value.trim()
+        image: existingProductImage
       };
+      if (selectedProductImage) data.image = await SP_SUPABASE.uploadProductImage(selectedProductImage, id || `prod-${Date.now()}`);
 
       closeProdModal();
       if (id) {

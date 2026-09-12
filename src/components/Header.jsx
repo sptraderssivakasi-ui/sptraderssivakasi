@@ -43,7 +43,8 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           onClick={() => { setCurrentView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           className="flex items-center gap-3 group text-left"
         >
-          <div className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-xl group-hover:scale-105 transition-transform shadow-md">
+          <img src="/images/logo.png" alt="SP Traders logo" className="w-10 h-10 rounded-xl object-contain border border-gold/30 bg-white/5" />
+          <div style={{ display: 'none' }} className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-xl group-hover:scale-105 transition-transform shadow-md">
             🎆
           </div>
           <div>
@@ -70,6 +71,7 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           </button>
           <button 
             onClick={() => setCurrentView('admin')}
+            style={{ display: 'none' }}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${currentView === 'admin' ? 'bg-gold text-night shadow-md' : 'text-paper/70 hover:text-gold hover:bg-white/5'}`}
           >
             <span>⚡</span> Admin Portal
@@ -117,6 +119,7 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           </button>
           <button 
             onClick={() => { setCurrentView('admin'); setMobileMenuOpen(false); }}
+            style={{ display: 'none' }}
             className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-bold ${currentView === 'admin' ? 'bg-gold text-night' : 'text-gold'}`}
           >
             ⚡ Admin Portal

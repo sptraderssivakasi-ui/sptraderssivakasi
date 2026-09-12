@@ -7,7 +7,7 @@ import {
 import { 
   getSupabaseCredentials, saveSupabaseCredentials, testSupabaseConnection,
   upsertProduct, deleteProduct, upsertCategory, deleteCategory,
-  fetchProducts, fetchCategories
+  fetchProducts, fetchCategories, uploadProductImage, deleteProductImage
 } from '../services/supabase';
 
 export default function AdminPage({ categories, products, setCategories, setProducts, showToast }) {
@@ -35,6 +35,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
     image: '',
     isFeatured: false
   });
+  const [productImageFile, setProductImageFile] = useState(null);
 
   // Category Modal
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -141,6 +142,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
       image: '',
       isFeatured: false
     });
+    setProductImageFile(null);
     setIsProductModalOpen(true);
   };
 
@@ -157,15 +159,53 @@ export default function AdminPage({ categories, products, setCategories, setProd
       image: prod.image || '',
       isFeatured: prod.isFeatured || false
     });
+    setProductImageFile(null);
     setIsProductModalOpen(true);
+  };
+
+  const handleProductImage = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select an image file.', 'X');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Image must be smaller than 10 MB.', 'X');
+      return;
+    }
+    setProductImageFile(file);
+    setProdForm(previous => ({ ...previous, image: URL.createObjectURL(file) }));
+  };
+
+  const removeProductImage = async () => {
+    try {
+      await deleteProductImage(prodForm.image);
+      setProdForm(previous => ({ ...previous, image: '' }));
+      setProductImageFile(null);
+      showToast('Product image removed.', '✓');
+    } catch (error) {
+      showToast(`Image removal failed: ${error.message}`, 'X');
+    }
   };
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     const id = editingProduct ? editingProduct.id : `prod-${Date.now().toString(36)}`;
+    let imageUrl = prodForm.image;
+    if (productImageFile) {
+      try {
+        showToast('Uploading product image...', '…');
+        imageUrl = await uploadProductImage(productImageFile, id);
+      } catch (error) {
+        showToast(`Image upload failed: ${error.message}`, 'X');
+        return;
+      }
+    }
     const updatedProd = {
       ...prodForm,
       id,
+      image: imageUrl,
       mrp: parseFloat(prodForm.mrp),
       price: parseFloat(prodForm.price)
     };
@@ -713,16 +753,18 @@ export default function AdminPage({ categories, products, setCategories, setProd
                   />
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label className="block font-bold text-gold uppercase mb-1">Image URL (Optional)</label>
-                  <input
-                    type="text"
-                    placeholder="images/products/sparklers.jpg or https://..."
-                    value={prodForm.image}
-                    onChange={(e) => setProdForm({ ...prodForm, image: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
-                  />
-                </div>
+                  <div className="sm:col-span-2">
+                    <label className="block font-bold text-gold uppercase mb-1">Product Image</label>
+                   <div className="mt-3 flex items-center gap-3">
+                     <label className="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-gold/30 px-4 py-2 text-xs font-bold text-gold hover:bg-gold/10">
+                       <UploadCloud className="w-4 h-4" /> Upload image
+                       <input type="file" accept="image/*" onChange={handleProductImage} className="hidden" />
+                     </label>
+                     {prodForm.image && <img src={prodForm.image} alt="Preview" className="h-12 w-12 rounded-lg object-cover border border-white/10" />}
+                     {prodForm.image && <button type="button" onClick={removeProductImage} className="text-xs font-bold text-red-300 hover:text-red-200">Remove image</button>}
+                   </div>
+                   <p className="mt-1 text-[11px] text-paper/40">JPG, PNG, WEBP · maximum 10 MB</p>
+                 </div>
 
                 <div className="sm:col-span-2 flex items-center gap-2 pt-2">
                   <input

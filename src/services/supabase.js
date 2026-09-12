@@ -14,6 +14,25 @@ export function getSupabaseClient() {
   return supabase;
 }
 
+export async function uploadProductImage(file, productId) {
+  if (!file) return null;
+  const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+  const path = `products/${productId}-${crypto.randomUUID()}.${extension}`;
+  const { error } = await supabase.storage.from('product-images').upload(path, file, {
+    cacheControl: '3600', upsert: true, contentType: file.type
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+export async function deleteProductImage(imageUrl) {
+  if (!imageUrl || !imageUrl.includes('/storage/v1/object/public/product-images/')) return;
+  const path = decodeURIComponent(imageUrl.split('/storage/v1/object/public/product-images/')[1]);
+  const { error } = await supabase.storage.from('product-images').remove([path]);
+  if (error) throw error;
+}
+
 // ── Test Connection ──
 export async function testSupabaseConnection() {
   try {

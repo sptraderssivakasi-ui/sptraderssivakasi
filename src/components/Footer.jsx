@@ -8,7 +8,8 @@ export default function Footer({ setCurrentView }) {
         {/* Brand Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-xl">
+            <img src="/images/logo.png" alt="SP Traders logo" className="w-10 h-10 rounded-xl object-contain border border-gold/30 bg-white/5" />
+            <div style={{ display: 'none' }} className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-xl">
               🎆
             </div>
             <div>

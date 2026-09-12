@@ -13,7 +13,8 @@ import { fetchCategories, fetchProducts } from './services/supabase';
 import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from './data/seedData';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'products', 'detail', 'admin'
+  const isAdminRoute = window.location.pathname === '/admin' || window.location.hash === '#admin';
+  const [currentView, setCurrentView] = useState(isAdminRoute ? 'admin' : 'home'); // 'home', 'products', 'detail', 'admin'
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('all');
 

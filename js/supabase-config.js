@@ -66,6 +66,23 @@ const SP_SUPABASE = (() => {
     setCredentials,
     getClient,
 
+    async uploadProductImage(file, productId) {
+      if (!file) return null;
+      const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+      const path = `products/${productId}-${crypto.randomUUID()}.${ext}`;
+      const { error } = await getClient().storage.from('product-images').upload(path, file, {
+        cacheControl: '3600', upsert: true, contentType: file.type
+      });
+      if (error) throw error;
+      return getClient().storage.from('product-images').getPublicUrl(path).data.publicUrl;
+    },
+    async deleteProductImage(imageUrl) {
+      if (!imageUrl || !imageUrl.includes('/storage/v1/object/public/product-images/')) return;
+      const path = decodeURIComponent(imageUrl.split('/storage/v1/object/public/product-images/')[1]);
+      const { error } = await getClient().storage.from('product-images').remove([path]);
+      if (error) throw error;
+    },
+
     // Test Connection
     async testConnection() {
       const client = getClient();

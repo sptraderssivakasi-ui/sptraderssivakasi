@@ -7,15 +7,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        night: { DEFAULT: '#0F0A1E', 2: '#1A1233', 3: '#251B44', 4: '#130C28' },
-        gold: { DEFAULT: '#E8A63D', soft: '#F4CE84', glow: 'rgba(232,166,61,0.25)' },
-        maroon: { DEFAULT: '#8C1D2F', deep: '#6B1522' },
-        paper: { DEFAULT: '#FBF3E2', dim: '#F3E8D3' },
+        night: { DEFAULT: '#111111', 2: '#1b1b1b', 3: '#252525', 4: '#0a0a0a' },
+        gold: { DEFAULT: '#111111', soft: '#444444', glow: 'rgba(0,0,0,0.18)' },
+        maroon: { DEFAULT: '#333333', deep: '#1f1f1f' },
+        paper: { DEFAULT: '#f7f7f7', dim: '#d4d4d4' },
         ink: { DEFAULT: '#2A2018', soft: '#6B5F50' },
       },
       fontFamily: {
-        display: ['Fraunces', 'serif'],
-        body: ['Inter', 'sans-serif'],
+        display: ['Space Grotesk', 'Inter', 'sans-serif'],
+        body: ['Manrope', 'Inter', 'sans-serif'],
       },
     },
   },
