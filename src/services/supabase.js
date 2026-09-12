@@ -1,15 +1,13 @@
-import { supabase } from '../utils/supabase';
+import { supabase, configureSupabase, getSupabaseCredentials as readSupabaseCredentials } from '../utils/supabase';
 import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS, WA_PHONE } from '../data/seedData';
 
 export function getSupabaseCredentials() {
-  const url = localStorage.getItem('sp_supabase_url') || import.meta.env.VITE_SUPABASE_URL || 'https://websuabugmjknzmaqzfi.supabase.co';
-  const anonKey = localStorage.getItem('sp_supabase_anon_key') || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_pioEQydt_VajxlN8J2Nqaw_W5ctH95S';
-  return { url, anonKey, isConfigured: true };
+  const { url, key } = readSupabaseCredentials();
+  return { url, anonKey: key, isConfigured: Boolean(url && key) };
 }
 
 export function saveSupabaseCredentials(url, anonKey) {
-  if (url) localStorage.setItem('sp_supabase_url', url.trim());
-  if (anonKey) localStorage.setItem('sp_supabase_anon_key', anonKey.trim());
+  configureSupabase(url, anonKey);
 }
 
 export function getSupabaseClient() {

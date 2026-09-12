@@ -68,7 +68,13 @@ export default function AdminPage({ categories, products, setCategories, setProd
       alert('Please fill in both Project URL and Anon/Publishable Key');
       return;
     }
-    saveSupabaseCredentials(supabaseUrl, supabaseKey);
+    try {
+      saveSupabaseCredentials(supabaseUrl, supabaseKey);
+    } catch (error) {
+      setConnectionStatus('error');
+      showToast(`Invalid Supabase settings: ${error.message}`, 'X');
+      return;
+    }
     showToast('Credentials saved! Verifying connection...', '⏳');
     const res = await testSupabaseConnection();
     if (res.success) {
@@ -88,10 +94,12 @@ export default function AdminPage({ categories, products, setCategories, setProd
     showToast('Uploading catalog to Supabase Cloud...', '⏳');
     try {
       for (const cat of categories) {
-        await upsertCategory(cat);
+        const result = await upsertCategory(cat);
+        if (!result?.success) throw result?.error || new Error('Category write failed');
       }
       for (const prod of products) {
-        await upsertProduct(prod);
+        const result = await upsertProduct(prod);
+        if (!result?.success) throw result?.error || new Error('Product write failed');
       }
       showToast(`Uploaded ${categories.length} categories & ${products.length} products to Supabase!`, '🎉');
     } catch (e) {
@@ -108,6 +116,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
     try {
       const freshCats = await fetchCategories();
       const freshProds = await fetchProducts();
+      if (!freshCats || !freshProds) throw new Error('Supabase returned no catalog data. Check the API key and RLS policies.');
       setCategories(freshCats);
       setProducts(freshProds);
       showToast('Local state updated from Supabase DB!', '✅');
