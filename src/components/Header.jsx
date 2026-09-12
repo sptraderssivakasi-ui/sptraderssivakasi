@@ -1,37 +1,43 @@
 import React, { useState } from 'react';
-import { Sparkles, ShoppingBag, Phone, MapPin, Menu, X, Shield, Clock } from 'lucide-react';
+import { Sparkles, ShoppingBag, Phone, MapPin, Menu, X, Shield, Lock } from 'lucide-react';
 
 export default function Header({ currentView, setCurrentView, cartCount, openCart }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-night/90 backdrop-blur-md border-b border-gold/15">
+    <header className="sticky top-0 z-40 bg-night/95 backdrop-blur-xl border-b border-gold/20 shadow-2xl">
       {/* ── Festive Top Marquee Strip ── */}
-      <div className="bg-maroon-deep overflow-hidden py-2 border-b border-gold/20 text-xs font-semibold text-gold-soft">
+      <div className="bg-gradient-to-r from-maroon via-crimson to-maroon overflow-hidden py-1.5 border-b border-gold/20 text-xs font-semibold text-gold-light">
         <div className="ticker-track flex items-center gap-8">
-          <span>🎆 Diwali 2026 Special Wholesale Discounts</span>
-          <span className="bg-gold text-night px-2 py-0.5 rounded font-extrabold text-[10px]">HOT</span>
-          <span>🚚 Direct Sivakasi Factory Courier Dispatch Across India</span>
-          <span className="bg-maroon text-paper px-2 py-0.5 rounded font-extrabold text-[10px]">100% GENUINE</span>
-          <span>✅ Licensed Sivakasi Green Fireworks</span>
+          <span className="flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-gold-light" /> Diwali 2026 Direct Sivakasi Wholesale Bookings Open!</span>
+          <span className="bg-gold text-night px-2.5 py-0.5 rounded-full font-black text-[10px] tracking-wider uppercase">FLAT 70% OFF</span>
+          <span>🚚 Safe Pan-India Factory Courier & Transport Dispatch</span>
+          <span className="bg-white/20 text-white px-2 py-0.5 rounded-md font-bold text-[10px]">100% ORIGINAL</span>
+          <span>✅ Authentic Certified Sivakasi Green Crackers</span>
           <span>•</span>
-          <span>🎆 Diwali 2026 Special Wholesale Discounts</span>
-          <span className="bg-gold text-night px-2 py-0.5 rounded font-extrabold text-[10px]">HOT</span>
-          <span>🚚 Direct Sivakasi Factory Courier Dispatch Across India</span>
+          <span className="flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-gold-light" /> Diwali 2026 Direct Sivakasi Wholesale Bookings Open!</span>
+          <span className="bg-gold text-night px-2.5 py-0.5 rounded-full font-black text-[10px] tracking-wider uppercase">FLAT 70% OFF</span>
+          <span>🚚 Safe Pan-India Factory Courier & Transport Dispatch</span>
         </div>
       </div>
 
       {/* ── Contact Info Strip ── */}
-      <div className="bg-night-2 border-b border-white/5 py-1.5 px-6 hidden sm:block text-xs text-paper/70">
+      <div className="bg-night-2/90 border-b border-white/5 py-1.5 px-6 hidden sm:block text-xs text-paper-dim">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex gap-6 items-center">
-            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-gold" /> Sivakasi, Tamil Nadu</span>
-            <a href="tel:+919443594447" className="flex items-center gap-1.5 hover:text-gold transition-colors">
-              <Phone className="w-3.5 h-3.5 text-gold" /> +91 94435 94447
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-gold" /> 
+              <span>Sivakasi, Tamil Nadu, India</span>
+            </span>
+            <a href="tel:+919443594447" className="flex items-center gap-1.5 text-paper hover:text-gold transition-colors font-semibold">
+              <Phone className="w-3.5 h-3.5 text-gold" /> 
+              <span>+91 94435 94447</span>
             </a>
           </div>
-          <div className="flex items-center gap-2 text-gold">
-            <Shield className="w-3.5 h-3.5" /> Sivakasi Authentic Direct Pricing
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-gold font-semibold text-[11px]">
+              <Shield className="w-3.5 h-3.5" /> Licensed Sivakasi Wholesale Distributor
+            </span>
           </div>
         </div>
       </div>
@@ -41,40 +47,58 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
         {/* Brand Logo */}
         <button 
           onClick={() => { setCurrentView('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="flex items-center gap-3 group text-left"
+          className="flex items-center gap-3.5 group text-left"
         >
-          <img src="/images/logo.png" alt="SP Traders logo" className="w-10 h-10 rounded-xl object-contain border border-gold/30 bg-white/5" />
-          <div style={{ display: 'none' }} className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-xl group-hover:scale-105 transition-transform shadow-md">
-            🎆
+          <div className="relative">
+            <img 
+              src="/images/logo.png" 
+              alt="SP Traders Sivakasi" 
+              className="w-11 h-11 rounded-2xl object-contain border border-gold/40 bg-night-3 p-0.5 group-hover:scale-105 transition-transform shadow-glow-gold" 
+            />
           </div>
           <div>
-            <div className="font-display font-black text-xl text-paper tracking-wider group-hover:text-gold transition-colors flex items-center gap-1.5">
-              SP TRADERS <span className="text-xs bg-gold text-night font-bold px-1.5 py-0.2 rounded">SIVAKASI</span>
+            <div className="font-display font-black text-xl sm:text-2xl text-white tracking-wider group-hover:text-gold transition-colors flex items-center gap-2">
+              SP TRADERS 
+              <span className="text-[10px] bg-gradient-to-r from-gold to-gold-soft text-night font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">
+                Sivakasi
+              </span>
             </div>
-            <div className="text-[10px] text-paper/50 tracking-widest uppercase font-semibold">Wholesale & Retail Fireworks</div>
+            <div className="text-[10px] text-paper-dim tracking-widest uppercase font-semibold">Wholesale & Retail Fireworks Hub</div>
           </div>
         </button>
 
         {/* Desktop Links */}
-        <nav className="hidden md:flex items-center gap-1 bg-night-3/60 p-1.5 rounded-full border border-white/10">
+        <nav className="hidden md:flex items-center gap-1.5 bg-night-3/80 backdrop-blur-md p-1.5 rounded-full border border-gold/20 shadow-inner">
           <button 
             onClick={() => setCurrentView('home')}
-            className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${currentView === 'home' ? 'bg-gold text-night shadow-md' : 'text-paper/70 hover:text-paper hover:bg-white/5'}`}
+            className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+              currentView === 'home' 
+                ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold' 
+                : 'text-paper-dim hover:text-white hover:bg-white/5'
+            }`}
           >
             Home
           </button>
           <button 
             onClick={() => setCurrentView('products')}
-            className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${currentView === 'products' ? 'bg-gold text-night shadow-md' : 'text-paper/70 hover:text-paper hover:bg-white/5'}`}
+            className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+              currentView === 'products' 
+                ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold' 
+                : 'text-paper-dim hover:text-white hover:bg-white/5'
+            }`}
           >
-            Products Catalog
+            Fireworks Catalog
           </button>
           <button 
             onClick={() => setCurrentView('admin')}
-            style={{ display: 'none' }}
-            className={`px-5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${currentView === 'admin' ? 'bg-gold text-night shadow-md' : 'text-paper/70 hover:text-gold hover:bg-white/5'}`}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+              currentView === 'admin' 
+                ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold' 
+                : 'text-paper-dim/80 hover:text-gold hover:bg-white/5'
+            }`}
           >
-            <span>⚡</span> Admin Portal
+            <Lock className="w-3 h-3 text-gold" />
+            <span>Admin</span>
           </button>
         </nav>
 
@@ -82,12 +106,12 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
         <div className="flex items-center gap-3">
           <button 
             onClick={openCart}
-            className="relative bg-gradient-to-r from-gold to-gold-soft text-night font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 hover:brightness-110 transition-all shadow-lg active:scale-95"
+            className="relative bg-gradient-to-r from-gold via-gold-soft to-gold text-night font-black px-4 sm:px-5 py-2.5 rounded-2xl text-xs flex items-center gap-2 hover:brightness-110 transition-all shadow-glow-gold active:scale-95 group"
           >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="hidden sm:inline">Enquiry List</span>
+            <ShoppingBag className="w-4 h-4 text-night group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline font-extrabold">Enquiry Cart</span>
             {cartCount > 0 && (
-              <span className="bg-maroon text-paper text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
+              <span className="bg-crimson text-white text-[11px] font-black w-5 h-5 rounded-full flex items-center justify-center animate-bounce shadow-md">
                 {cartCount}
               </span>
             )}
@@ -95,7 +119,8 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
 
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl bg-night-3 border border-white/10 text-paper/80 hover:text-gold"
+            className="md:hidden p-2 rounded-xl bg-night-3 border border-gold/20 text-paper hover:text-gold"
+            aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -104,26 +129,44 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
 
       {/* ── Mobile Menu Dropdown ── */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-night-2 border-b border-gold/20 px-6 py-4 space-y-3">
+        <div className="md:hidden bg-night-2/98 backdrop-blur-xl border-b border-gold/30 px-6 py-5 space-y-3 animate-fadeIn">
           <button 
             onClick={() => { setCurrentView('home'); setMobileMenuOpen(false); }}
-            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-bold ${currentView === 'home' ? 'bg-gold text-night' : 'text-paper/80'}`}
+            className={`w-full text-left py-3 px-4 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${
+              currentView === 'home' ? 'bg-gold text-night' : 'text-paper hover:bg-white/5'
+            }`}
           >
-            🏠 Home
+            <span>🏠</span>
+            <span>Home</span>
           </button>
           <button 
             onClick={() => { setCurrentView('products'); setMobileMenuOpen(false); }}
-            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-bold ${currentView === 'products' ? 'bg-gold text-night' : 'text-paper/80'}`}
+            className={`w-full text-left py-3 px-4 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${
+              currentView === 'products' ? 'bg-gold text-night' : 'text-paper hover:bg-white/5'
+            }`}
           >
-            🎆 Products Catalog
+            <span>🎆</span>
+            <span>Fireworks Catalog</span>
           </button>
           <button 
             onClick={() => { setCurrentView('admin'); setMobileMenuOpen(false); }}
-            style={{ display: 'none' }}
-            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-bold ${currentView === 'admin' ? 'bg-gold text-night' : 'text-gold'}`}
+            className={`w-full text-left py-3 px-4 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${
+              currentView === 'admin' ? 'bg-gold text-night' : 'text-gold hover:bg-white/5'
+            }`}
           >
-            ⚡ Admin Portal
+            <Lock className="w-4 h-4 text-gold" />
+            <span>Admin Portal</span>
           </button>
+          <div className="pt-2 border-t border-white/10">
+            <a 
+              href="https://wa.me/919443594447"
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-3 px-4 rounded-xl text-xs font-extrabold bg-emerald/20 text-emerald border border-emerald/30 flex items-center justify-center gap-2"
+            >
+              <span>💬</span> WhatsApp Inquiry: +91 94435 94447
+            </a>
+          </div>
         </div>
       )}
     </header>

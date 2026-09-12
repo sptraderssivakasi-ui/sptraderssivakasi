@@ -1,34 +1,34 @@
 /* ── SP Traders — Custom Styles (beyond Tailwind) ── */
 
 /* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --night: #0F0A1E;
-  --night2: #1A1233;
-  --night3: #251B44;
-  --gold: #E8A63D;
-  --gold-soft: #F4CE84;
-  --gold-glow: rgba(232, 166, 61, 0.25);
-  --maroon: #8C1D2F;
-  --maroon-deep: #6B1522;
-  --paper: #FBF3E2;
-  --paper-dim: #F3E8D3;
-  --ink: #2A2018;
-  --ink-soft: #6B5F50;
+  --night: #0B061A;
+  --night2: #140C2D;
+  --night3: #1D123F;
+  --gold: #F59E0B;
+  --gold-soft: #FBBF24;
+  --gold-glow: rgba(245, 158, 11, 0.35);
+  --maroon: #881337;
+  --maroon-deep: #4C0519;
+  --paper: #FFFFFF;
+  --paper-dim: #CBD5E1;
+  --ink: #1E1B4B;
+  --ink-soft: #475569;
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Fraunces', serif;
+  font-family: 'Outfit', sans-serif;
 }
 
 /* ── Scrollbar ── */

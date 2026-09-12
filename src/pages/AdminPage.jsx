@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   Package, FolderTree, Database, Plus, Search, Edit3, Trash2, 
   ExternalLink, Check, AlertTriangle, RefreshCw, UploadCloud, DownloadCloud,
-  CheckCircle, Key, Link2, Sparkles, TrendingUp
+  CheckCircle, Key, Link2, Sparkles, TrendingUp, ShieldCheck, Flame, Star,
+  Eye, X, Image as ImageIcon, CheckCircle2, ArrowUpDown, Filter, ChevronRight
 } from 'lucide-react';
 import { 
   getSupabaseCredentials, saveSupabaseCredentials, testSupabaseConnection,
@@ -20,6 +21,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
   const [supabaseKey, setSupabaseKey] = useState('');
   const [connectionStatus, setConnectionStatus] = useState('checking'); // 'connected', 'local', 'error'
   const [isSyncing, setIsSyncing] = useState(false);
+  const [showKey, setShowKey] = useState(false);
 
   // Product Modal
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -73,7 +75,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
       saveSupabaseCredentials(supabaseUrl, supabaseKey);
     } catch (error) {
       setConnectionStatus('error');
-      showToast(`Invalid Supabase settings: ${error.message}`, 'X');
+      showToast(`Invalid Supabase settings: ${error.message}`, '❌');
       return;
     }
     showToast('Credentials saved! Verifying connection...', '⏳');
@@ -167,11 +169,11 @@ export default function AdminPage({ categories, products, setCategories, setProd
     const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      showToast('Please select an image file.', 'X');
+      showToast('Please select an image file.', '❌');
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      showToast('Image must be smaller than 10 MB.', 'X');
+      showToast('Image must be smaller than 10 MB.', '❌');
       return;
     }
     setProductImageFile(file);
@@ -183,9 +185,9 @@ export default function AdminPage({ categories, products, setCategories, setProd
       await deleteProductImage(prodForm.image);
       setProdForm(previous => ({ ...previous, image: '' }));
       setProductImageFile(null);
-      showToast('Product image removed.', '✓');
+      showToast('Product image removed.', '✅');
     } catch (error) {
-      showToast(`Image removal failed: ${error.message}`, 'X');
+      showToast(`Image removal failed: ${error.message}`, '❌');
     }
   };
 
@@ -195,10 +197,10 @@ export default function AdminPage({ categories, products, setCategories, setProd
     let imageUrl = prodForm.image;
     if (productImageFile) {
       try {
-        showToast('Uploading product image...', '…');
+        showToast('Uploading product image...', '⏳');
         imageUrl = await uploadProductImage(productImageFile, id);
       } catch (error) {
-        showToast(`Image upload failed: ${error.message}`, 'X');
+        showToast(`Image upload failed: ${error.message}`, '❌');
         return;
       }
     }
@@ -206,8 +208,8 @@ export default function AdminPage({ categories, products, setCategories, setProd
       ...prodForm,
       id,
       image: imageUrl,
-      mrp: parseFloat(prodForm.mrp),
-      price: parseFloat(prodForm.price)
+      mrp: parseFloat(prodForm.mrp) || 0,
+      price: parseFloat(prodForm.price) || 0
     };
 
     setIsProductModalOpen(false);
@@ -227,9 +229,9 @@ export default function AdminPage({ categories, products, setCategories, setProd
     const res = await upsertProduct(updatedProd);
     if (res && !res.success) {
       alert(`Supabase Database Warning: ${res.error?.message || 'Could not write to Supabase'}. Please verify RLS policies and API keys.`);
-      showToast('Saved locally (Supabase error)', '⚠️');
+      showToast('Saved locally (Supabase warning)', '⚠️');
     } else {
-      showToast('Product saved to database & store!', '✅');
+      showToast('Product saved successfully!', '✅');
     }
   };
 
@@ -282,7 +284,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
     const res = await upsertCategory(updatedCat);
     if (res && !res.success) {
       alert(`Supabase Database Warning: ${res.error?.message || 'Could not write to Supabase'}. Please check RLS policies and API keys.`);
-      showToast('Saved locally (Supabase error)', '⚠️');
+      showToast('Saved locally (Supabase warning)', '⚠️');
     } else {
       showToast('Category saved to database!', '✅');
     }
@@ -299,108 +301,146 @@ export default function AdminPage({ categories, products, setCategories, setProd
     localStorage.setItem('sp_products', JSON.stringify(nextProducts));
 
     await deleteCategory(id);
-    showToast('Category deleted.', '🗑️');
+    showToast('Category and associated products removed.', '🗑️');
   };
 
-  // Filtered table products
+  // Filtered product listing
   const filteredProducts = products.filter(p => {
     const matchesCat = selectedCatFilter === 'all' || p.categoryId === selectedCatFilter;
     const q = searchQuery.toLowerCase().trim();
-    const matchesSearch = !q || p.name.toLowerCase().includes(q) || (p.shortDesc && p.shortDesc.toLowerCase().includes(q));
+    const matchesSearch = !q || p.name.toLowerCase().includes(q) || (p.meta && p.meta.toLowerCase().includes(q));
     return matchesCat && matchesSearch;
   });
 
-  const avgPrice = products.length > 0 ? Math.round(products.reduce((s, p) => s + p.price, 0) / products.length) : 0;
+  const featuredCount = products.filter(p => p.isFeatured).length;
+  const avgPrice = products.length > 0 ? Math.round(products.reduce((s, p) => s + (p.price || 0), 0) / products.length) : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
-      {/* ── Top Bar & Stats ── */}
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/20">
-                Management Portal
-              </span>
-              {connectionStatus === 'connected' ? (
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Supabase Live
-                </span>
-              ) : (
-                <span className="text-xs font-bold text-yellow-400 bg-yellow-950/80 px-2.5 py-0.5 rounded-full border border-yellow-500/30">
-                  🟡 Local Mode
-                </span>
-              )}
+    <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      
+      {/* ── Admin Top Bar & Header ── */}
+      <div className="bg-gradient-to-r from-night-2 via-night-3 to-night-2 border border-gold/30 rounded-3xl p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div className="space-y-2 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gold/15 border border-gold/40 flex items-center justify-center text-gold font-bold text-lg shadow-glow-gold">
+              ⚡
             </div>
-            <h1 className="font-display text-3xl font-extrabold text-paper mt-2">
-              Catalog & Cloud Admin
-            </h1>
-            <p className="text-xs text-paper/60 mt-1">
-              Live management for Sivakasi products, wholesale pricing, categories, and database sync.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <button
-              onClick={openAddCategory}
-              className="bg-night-3 hover:bg-night-2 border border-gold/30 hover:border-gold text-gold font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Category</span>
-            </button>
-
-            <button
-              onClick={openAddProduct}
-              className="bg-gradient-to-r from-gold to-gold-soft hover:brightness-110 text-night font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all shadow-lg active:scale-95"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Add New Product</span>
-            </button>
+            <div>
+              <h1 className="font-display text-2xl sm:text-3xl font-black text-white tracking-tight">
+                SP Traders Admin Portal
+              </h1>
+              <p className="text-xs text-paper-dim">Inventory Control, Wholesale Price Manager & Supabase Cloud Sync</p>
+            </div>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-night-2 border border-gold/15 rounded-2xl p-5">
-            <div className="text-[11px] font-bold text-paper/40 uppercase">Total Products</div>
-            <div className="text-3xl font-black text-paper mt-1">{products.length}</div>
-            <div className="text-xs text-gold mt-0.5">Active items</div>
+        {/* Cloud Status Pill & Quick Action */}
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+          <div className={`px-3.5 py-2 rounded-2xl border text-xs font-bold flex items-center gap-2 shadow-sm ${
+            connectionStatus === 'connected' 
+              ? 'bg-emerald/15 border-emerald/40 text-emerald' 
+              : connectionStatus === 'checking'
+              ? 'bg-gold/15 border-gold/40 text-gold'
+              : 'bg-crimson/15 border-crimson/40 text-crimson-light'
+          }`}>
+            <span className={`w-2.5 h-2.5 rounded-full ${
+              connectionStatus === 'connected' ? 'bg-emerald animate-ping' : 'bg-gold'
+            }`}></span>
+            <span>{connectionStatus === 'connected' ? 'Supabase Live' : connectionStatus === 'checking' ? 'Checking DB' : 'Local Storage Mode'}</span>
           </div>
 
-          <div className="bg-night-2 border border-gold/15 rounded-2xl p-5">
-            <div className="text-[11px] font-bold text-paper/40 uppercase">Categories</div>
-            <div className="text-3xl font-black text-paper mt-1">{categories.length}</div>
-            <div className="text-xs text-gold mt-0.5">Product groups</div>
-          </div>
+          <button
+            onClick={handlePullFromCloud}
+            disabled={isSyncing}
+            className="bg-night-4 hover:bg-night-3 border border-gold/30 hover:border-gold text-paper text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+            title="Sync Latest From Supabase"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-gold ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>Pull Sync</span>
+          </button>
 
-          <div className="bg-night-2 border border-gold/15 rounded-2xl p-5">
-            <div className="text-[11px] font-bold text-paper/40 uppercase">Average Wholesale Price</div>
-            <div className="text-3xl font-black text-gold mt-1">₹{avgPrice}</div>
-            <div className="text-xs text-paper/40 mt-0.5">Per item average</div>
-          </div>
+          <button
+            onClick={handlePushToCloud}
+            disabled={isSyncing}
+            className="bg-gradient-to-r from-gold to-gold-soft hover:brightness-110 text-night text-xs font-black px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-glow-gold active:scale-95"
+            title="Upload Local State to Supabase"
+          >
+            <UploadCloud className="w-3.5 h-3.5" />
+            <span>Push to Cloud</span>
+          </button>
+        </div>
+      </div>
 
-          <div className="bg-night-2 border border-gold/15 rounded-2xl p-5">
-            <div className="text-[11px] font-bold text-paper/40 uppercase">WhatsApp Helpline</div>
-            <div className="text-lg font-bold text-emerald-400 font-mono mt-2">+91 94435 94447</div>
-            <div className="text-xs text-paper/40 mt-0.5">Enquiry channel</div>
+      {/* ── KPI Summary Cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 rounded-2xl bg-night-2/90 border border-gold/20 shadow-lg flex items-center justify-between">
+          <div>
+            <div className="text-xs font-bold text-paper-dim uppercase tracking-wider">Total Fireworks</div>
+            <div className="font-display text-3xl font-black text-white mt-1">{products.length}</div>
+            <div className="text-[11px] text-gold mt-1 font-semibold">Active in Catalog</div>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold text-xl shadow-glow-gold">
+            <Package className="w-6 h-6" />
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-night-2/90 border border-gold/20 shadow-lg flex items-center justify-between">
+          <div>
+            <div className="text-xs font-bold text-paper-dim uppercase tracking-wider">Categories</div>
+            <div className="font-display text-3xl font-black text-white mt-1">{categories.length}</div>
+            <div className="text-[11px] text-emerald mt-1 font-semibold">Firework Classes</div>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-emerald/15 border border-emerald/30 flex items-center justify-center text-emerald text-xl">
+            <FolderTree className="w-6 h-6" />
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-night-2/90 border border-gold/20 shadow-lg flex items-center justify-between">
+          <div>
+            <div className="text-xs font-bold text-paper-dim uppercase tracking-wider">Featured Items</div>
+            <div className="font-display text-3xl font-black text-white mt-1">{featuredCount}</div>
+            <div className="text-[11px] text-gold mt-1 font-semibold">Home Highlights</div>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold text-xl">
+            <Star className="w-6 h-6" />
+          </div>
+        </div>
+
+        <div className="p-5 rounded-2xl bg-night-2/90 border border-gold/20 shadow-lg flex items-center justify-between">
+          <div>
+            <div className="text-xs font-bold text-paper-dim uppercase tracking-wider">Average Rate</div>
+            <div className="font-display text-3xl font-black text-gold mt-1">₹{avgPrice}</div>
+            <div className="text-[11px] text-paper-dim mt-1 font-semibold">Wholesale Price</div>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-crimson/15 border border-crimson/30 flex items-center justify-center text-crimson text-xl">
+            <TrendingUp className="w-6 h-6" />
           </div>
         </div>
       </div>
 
-      {/* ── Tabs Navigation ── */}
+      {/* ── Navigation Tabs ── */}
       <div className="flex border-b border-gold/20 gap-2">
         <button
           onClick={() => setActiveTab('products')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 ${activeTab === 'products' ? 'text-gold border-gold' : 'text-paper/60 border-transparent hover:text-paper'}`}
+          className={`px-6 py-3.5 text-xs font-black rounded-t-2xl transition-all flex items-center gap-2 border-t border-x ${
+            activeTab === 'products'
+              ? 'bg-night-2 text-gold border-gold/30 shadow-lg'
+              : 'border-transparent text-paper-dim hover:text-white hover:bg-night-3/40'
+          }`}
         >
           <Package className="w-4 h-4" />
-          <span>Products ({products.length})</span>
+          <span>Products Management ({products.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab('categories')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 ${activeTab === 'categories' ? 'text-gold border-gold' : 'text-paper/60 border-transparent hover:text-paper'}`}
+          className={`px-6 py-3.5 text-xs font-black rounded-t-2xl transition-all flex items-center gap-2 border-t border-x ${
+            activeTab === 'categories'
+              ? 'bg-night-2 text-gold border-gold/30 shadow-lg'
+              : 'border-transparent text-paper-dim hover:text-white hover:bg-night-3/40'
+          }`}
         >
           <FolderTree className="w-4 h-4" />
           <span>Categories ({categories.length})</span>
@@ -408,34 +448,43 @@ export default function AdminPage({ categories, products, setCategories, setProd
 
         <button
           onClick={() => setActiveTab('supabase')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 ${activeTab === 'supabase' ? 'text-gold border-gold' : 'text-paper/60 border-transparent hover:text-paper'}`}
+          className={`px-6 py-3.5 text-xs font-black rounded-t-2xl transition-all flex items-center gap-2 border-t border-x ${
+            activeTab === 'supabase'
+              ? 'bg-night-2 text-gold border-gold/30 shadow-lg'
+              : 'border-transparent text-paper-dim hover:text-white hover:bg-night-3/40'
+          }`}
         >
           <Database className="w-4 h-4" />
-          <span>⚡ Supabase DB Settings</span>
+          <span>Supabase Cloud Settings</span>
         </button>
       </div>
 
-      {/* ── TAB 1: PRODUCTS ── */}
+      {/* ════════ TAB 1: PRODUCTS INVENTORY ════════ */}
       {activeTab === 'products' && (
-        <div className="space-y-4">
-          {/* Table Toolbar */}
-          <div className="bg-night-2 border border-gold/15 rounded-2xl p-4 flex flex-col md:flex-row gap-4 justify-between items-center">
-            <div className="relative w-full md:w-80">
-              <input
-                type="text"
-                placeholder="Search products by name or description..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-night-3 border border-gold/15 rounded-xl pl-9 pr-4 py-2 text-xs text-paper placeholder-paper/30 focus:outline-none focus:border-gold"
-              />
-              <Search className="w-4 h-4 text-paper/40 absolute left-3 top-1/2 -translate-y-1/2" />
-            </div>
+        <div className="space-y-6">
+          {/* Controls Bar */}
+          <div className="bg-night-2/95 border border-gold/20 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row gap-4 justify-between items-center shadow-xl">
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+              <div className="relative w-full sm:w-80">
+                <input
+                  type="text"
+                  placeholder="Search products by name or pack..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-night-3 border border-gold/25 rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-paper-muted focus:outline-none focus:border-gold"
+                />
+                <Search className="w-4 h-4 text-paper-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-paper-muted hover:text-white">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
 
-            <div className="w-full md:w-auto">
               <select
                 value={selectedCatFilter}
                 onChange={(e) => setSelectedCatFilter(e.target.value)}
-                className="w-full md:w-auto bg-night-3 border border-gold/15 rounded-xl px-4 py-2 text-xs text-paper focus:outline-none focus:border-gold"
+                className="w-full sm:w-auto bg-night-3 border border-gold/25 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-gold font-medium cursor-pointer"
               >
                 <option value="all">All Categories ({products.length})</option>
                 {categories.map(c => (
@@ -443,27 +492,37 @@ export default function AdminPage({ categories, products, setCategories, setProd
                 ))}
               </select>
             </div>
+
+            <button
+              onClick={openAddProduct}
+              className="w-full lg:w-auto bg-gradient-to-r from-gold via-gold-soft to-gold text-night text-xs font-black px-6 py-3 rounded-xl shadow-glow-gold hover:brightness-110 transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Add New Product</span>
+            </button>
           </div>
 
-          {/* Products Table */}
-          <div className="bg-night-2 border border-gold/15 rounded-2xl overflow-hidden">
+          {/* Product Data Table */}
+          <div className="bg-night-2 rounded-2xl border border-gold/20 overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-night-3/80 text-paper/50 uppercase tracking-wider font-bold border-b border-white/5">
+                <thead className="bg-night-3 text-paper-dim uppercase font-extrabold border-b border-gold/20 text-[11px]">
                   <tr>
-                    <th className="py-3.5 px-4">Item & Description</th>
-                    <th className="py-3.5 px-4">Category</th>
-                    <th className="py-3.5 px-4">Pack Spec</th>
-                    <th className="py-3.5 px-4">Pricing (MRP / Wholesale)</th>
-                    <th className="py-3.5 px-4">Discount</th>
-                    <th className="py-3.5 px-4 text-right">Actions</th>
+                    <th className="py-4 px-6">Product Details</th>
+                    <th className="py-4 px-4">Category</th>
+                    <th className="py-4 px-4">Pack Size</th>
+                    <th className="py-4 px-4">MRP (₹)</th>
+                    <th className="py-4 px-4">Wholesale Price (₹)</th>
+                    <th className="py-4 px-4 text-center">Featured</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-white/5 text-paper">
                   {filteredProducts.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="py-12 text-center text-paper/40">
-                        No fireworks found matching current search.
+                      <td colSpan="7" className="py-12 text-center text-paper-muted">
+                        <div className="text-3xl mb-2">📦</div>
+                        No products found matching your search.
                       </td>
                     </tr>
                   ) : (
@@ -471,43 +530,80 @@ export default function AdminPage({ categories, products, setCategories, setProd
                       const cat = categories.find(c => c.id === p.categoryId);
                       const discount = Math.max(0, Math.round((1 - p.price / p.mrp) * 100));
                       return (
-                        <tr key={p.id} className="hover:bg-night-3/40 transition-colors">
-                          <td className="py-3 px-4">
-                            <div className="font-bold text-paper text-sm">{p.name}</div>
-                            <div className="text-[11px] text-paper/40 line-clamp-1">{p.shortDesc}</div>
+                        <tr key={p.id} className="hover:bg-night-3/60 transition-colors group">
+                          {/* Details & Image */}
+                          <td className="py-3.5 px-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-xl bg-night-4 border border-gold/20 overflow-hidden shrink-0 flex items-center justify-center">
+                                {p.image ? (
+                                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xl">🎆</span>
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-extrabold text-white group-hover:text-gold transition-colors">{p.name}</div>
+                                <div className="text-[11px] text-paper-muted line-clamp-1 max-w-xs mt-0.5">{p.shortDesc || p.description || 'Sivakasi product'}</div>
+                              </div>
+                            </div>
                           </td>
-                          <td className="py-3 px-4">
-                            <span className="bg-night-3 text-gold text-[11px] px-2.5 py-1 rounded-md border border-white/5 whitespace-nowrap">
+
+                          {/* Category */}
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <span className="bg-night-4 px-2.5 py-1 rounded-lg border border-gold/15 text-gold font-semibold text-[11px]">
                               {cat ? cat.name : 'Unknown'}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-paper/70 font-mono text-[11px]">
+
+                          {/* Pack */}
+                          <td className="py-3.5 px-4 font-mono text-paper-dim whitespace-nowrap">
                             {p.meta || '1 Box'}
                           </td>
-                          <td className="py-3 px-4 whitespace-nowrap">
-                            <span className="font-bold text-gold text-sm">₹{p.price}</span>
-                            <span className="text-paper/40 line-through text-xs ml-1.5">₹{p.mrp}</span>
+
+                          {/* MRP */}
+                          <td className="py-3.5 px-4 font-mono text-paper-muted line-through whitespace-nowrap">
+                            ₹{p.mrp}
                           </td>
-                          <td className="py-3 px-4">
-                            <span className="text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">
-                              {discount}% OFF
-                            </span>
+
+                          {/* Price & Discount */}
+                          <td className="py-3.5 px-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-gold font-mono text-sm">₹{p.price}</span>
+                              {discount > 0 && (
+                                <span className="bg-emerald/15 border border-emerald/30 text-emerald text-[10px] font-bold px-1.5 py-0.2 rounded">
+                                  {discount}% OFF
+                                </span>
+                              )}
+                            </div>
                           </td>
-                          <td className="py-3 px-4 text-right whitespace-nowrap">
-                            <div className="flex items-center justify-end gap-1.5">
+
+                          {/* Featured */}
+                          <td className="py-3.5 px-4 text-center">
+                            {p.isFeatured ? (
+                              <span className="text-gold font-bold bg-gold/10 px-2 py-0.5 rounded-full border border-gold/30 text-[10px] inline-flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-gold" /> Featured
+                              </span>
+                            ) : (
+                              <span className="text-paper-muted text-[11px]">—</span>
+                            )}
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-3.5 px-6 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() => openEditProduct(p)}
-                                className="p-1.5 text-paper/60 hover:text-gold transition-colors rounded hover:bg-white/5"
+                                className="p-2 rounded-xl bg-night-4 hover:bg-gold hover:text-night text-paper-dim hover:border-gold border border-white/10 transition-all active:scale-95"
                                 title="Edit Product"
                               >
-                                <Edit3 className="w-4 h-4" />
+                                <Edit3 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteProduct(p.id)}
-                                className="p-1.5 text-paper/60 hover:text-red-400 transition-colors rounded hover:bg-white/5"
+                                className="p-2 rounded-xl bg-night-4 hover:bg-crimson text-crimson-light hover:text-white border border-crimson/20 transition-all active:scale-95"
                                 title="Delete Product"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
@@ -522,169 +618,220 @@ export default function AdminPage({ categories, products, setCategories, setProd
         </div>
       )}
 
-      {/* ── TAB 2: CATEGORIES ── */}
+      {/* ════════ TAB 2: CATEGORIES ════════ */}
       {activeTab === 'categories' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map(cat => {
-            const count = products.filter(p => p.categoryId === cat.id).length;
-            return (
-              <div key={cat.id} className="bg-night-2 border border-gold/15 rounded-2xl p-5 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="w-12 h-12 rounded-xl bg-night-3 border border-gold/20 flex items-center justify-center text-2xl">
-                      {cat.icon || '📑'}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-display text-lg font-bold text-white">Product Categories</h3>
+              <p className="text-xs text-paper-dim">Manage your firework classifications & catalog navigation pills</p>
+            </div>
+            <button
+              onClick={openAddCategory}
+              className="bg-gradient-to-r from-gold to-gold-soft text-night text-xs font-black px-5 py-2.5 rounded-xl shadow-glow-gold hover:brightness-110 transition-all flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Add Category</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map(cat => {
+              const count = products.filter(p => p.categoryId === cat.id).length;
+              return (
+                <div key={cat.id} className="glass-card rounded-2xl p-5 flex items-center justify-between gap-4 border border-gold/20 shadow-lg">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-14 h-14 rounded-2xl bg-night-3 border border-gold/30 flex items-center justify-center text-3xl shadow-glow-gold">
+                      {cat.icon || '🎆'}
                     </div>
-                    <span className="text-xs font-bold bg-gold/10 text-gold px-2.5 py-1 rounded-full border border-gold/20">
-                      {count} Products
-                    </span>
+                    <div>
+                      <h4 className="font-bold text-sm text-white">{cat.name}</h4>
+                      <div className="text-[11px] text-gold font-mono mt-0.5">slug: {cat.slug || cat.id}</div>
+                      <div className="text-[10px] text-paper-muted mt-1">{count} products assigned</div>
+                    </div>
                   </div>
-                  <h3 className="font-display font-bold text-paper text-base">{cat.name}</h3>
-                  <div className="text-[11px] font-mono text-paper/40 mt-1">Slug: {cat.slug}</div>
-                </div>
 
-                <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => openEditCategory(cat)}
-                    className="text-xs text-paper/70 hover:text-gold px-3 py-1.5 rounded-lg bg-night-3 border border-white/5 flex items-center gap-1"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" /> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCategory(cat.id)}
-                    className="text-xs text-maroon hover:text-red-400 px-3 py-1.5 rounded-lg bg-maroon/10 border border-maroon/20 flex items-center gap-1"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> Delete
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => openEditCategory(cat)}
+                      className="p-2 rounded-xl bg-night-4 hover:bg-gold hover:text-night text-paper-dim border border-white/10 transition-colors"
+                      title="Edit Category"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCategory(cat.id)}
+                      className="p-2 rounded-xl bg-night-4 hover:bg-crimson text-crimson-light hover:text-white border border-crimson/20 transition-colors"
+                      title="Delete Category"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* ── TAB 3: SUPABASE DB SETTINGS ── */}
+      {/* ════════ TAB 3: SUPABASE SETTINGS ════════ */}
       {activeTab === 'supabase' && (
-        <div className="bg-night-2 border border-gold/20 rounded-3xl p-6 lg:p-8 space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+        <div className="max-w-3xl space-y-6">
+          <div className="bg-night-2 border border-gold/25 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
             <div>
-              <div className="flex items-center gap-3">
-                <h2 className="font-display text-2xl font-bold text-paper">Supabase Cloud Database Settings</h2>
-                {connectionStatus === 'connected' ? (
-                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400">
-                    🟢 Connected
-                  </span>
-                ) : (
-                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-yellow-950/80 border border-yellow-500/30 text-yellow-400">
-                    🟡 Local Mode
-                  </span>
-                )}
+              <div className="inline-flex items-center gap-2 text-xs font-black text-gold uppercase tracking-widest bg-gold/10 px-3 py-1 rounded-full border border-gold/20 mb-2">
+                <Database className="w-3.5 h-3.5" /> Cloud Storage & Database
               </div>
-              <p className="text-xs text-paper/60 mt-1">
-                Configure your Supabase database credentials to synchronize categories, fireworks, and WhatsApp enquiry records.
-              </p>
+              <h3 className="font-display text-2xl font-black text-white">Supabase Connection Settings</h3>
+              <p className="text-xs text-paper-dim mt-1">Configure your remote PostgreSQL database credentials for seamless multi-device catalog syncing.</p>
             </div>
 
-            <button
-              onClick={checkConnection}
-              className="self-start md:self-auto bg-night-3 hover:bg-night-4 border border-gold/30 text-gold text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2"
-            >
-              <RefreshCw className="w-3.5 h-3.5" /> Test Connection
-            </button>
-          </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 flex items-center gap-2">
+                  <Link2 className="w-3.5 h-3.5 text-gold" /> Supabase Project URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://xyzcompany.supabase.co"
+                  value={supabaseUrl}
+                  onChange={(e) => setSupabaseUrl(e.target.value)}
+                  className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-3 text-xs text-white placeholder-paper-muted focus:outline-none focus:border-gold font-mono"
+                />
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gold mb-2">
-                Supabase Project URL
-              </label>
-              <input
-                type="text"
-                placeholder="https://xyz.supabase.co"
-                value={supabaseUrl}
-                onChange={(e) => setSupabaseUrl(e.target.value)}
-                className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-3 text-paper font-mono text-xs placeholder-paper/30 focus:outline-none focus:border-gold"
-              />
-              <p className="text-[11px] text-paper/40 mt-1.5">From Supabase Dashboard → Settings → API → Project URL</p>
+              <div>
+                <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1.5 flex items-center gap-2">
+                  <Key className="w-3.5 h-3.5 text-gold" /> Supabase Anon / Publishable Key
+                </label>
+                <div className="relative">
+                  <input
+                    type={showKey ? 'text' : 'password'}
+                    placeholder="eyJhbGciOiJIUzI1NiIsIn..."
+                    value={supabaseKey}
+                    onChange={(e) => setSupabaseKey(e.target.value)}
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-3 pr-16 text-xs text-white placeholder-paper-muted focus:outline-none focus:border-gold font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowKey(!showKey)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gold font-bold hover:underline"
+                  >
+                    {showKey ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-wrap gap-4 items-center">
+                <button
+                  onClick={handleSaveCredentials}
+                  className="bg-gradient-to-r from-gold to-gold-soft text-night font-black px-6 py-3 rounded-xl text-xs shadow-glow-gold hover:brightness-110 transition-all flex items-center gap-2 active:scale-95"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Save & Test Connection</span>
+                </button>
+
+                <button
+                  onClick={checkConnection}
+                  className="bg-night-4 hover:bg-night-3 border border-gold/20 text-paper font-bold px-5 py-3 rounded-xl text-xs transition-colors flex items-center gap-2"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-gold" />
+                  <span>Check Status</span>
+                </button>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gold mb-2">
-                Supabase Publishable / Anon Key
-              </label>
-              <input
-                type="text"
-                placeholder="sb_publishable_... or eyJhbGci..."
-                value={supabaseKey}
-                onChange={(e) => setSupabaseKey(e.target.value)}
-                className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-3 text-paper font-mono text-xs placeholder-paper/30 focus:outline-none focus:border-gold"
-              />
-              <p className="text-[11px] text-paper/40 mt-1.5">From Supabase Dashboard → Settings → API → Project API Keys</p>
-            </div>
-          </div>
+            {/* Cloud Sync Manual Triggers */}
+            <div className="pt-6 border-t border-white/10 space-y-4">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Direct Catalog Sync Actions</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-night-3/70 border border-gold/15 space-y-3">
+                  <div className="font-bold text-xs text-white flex items-center gap-2">
+                    <UploadCloud className="w-4 h-4 text-gold" /> Upload Local → Supabase
+                  </div>
+                  <p className="text-[11px] text-paper-dim">Overwrites Supabase DB tables with your current local {products.length} products & {categories.length} categories.</p>
+                  <button
+                    onClick={handlePushToCloud}
+                    disabled={isSyncing}
+                    className="w-full bg-gold/15 hover:bg-gold text-gold hover:text-night border border-gold/30 font-extrabold py-2 rounded-xl text-xs transition-all"
+                  >
+                    Push All to Cloud
+                  </button>
+                </div>
 
-          <div className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
-            <button
-              onClick={handleSaveCredentials}
-              className="bg-gold hover:bg-gold-soft text-night font-bold px-6 py-3 rounded-xl text-xs flex items-center gap-2 shadow-lg"
-            >
-              <Key className="w-4 h-4" />
-              <span>Save & Connect Database</span>
-            </button>
-
-            <div className="flex gap-3">
-              <button
-                onClick={handlePushToCloud}
-                disabled={isSyncing}
-                className="bg-night-3 hover:bg-night-4 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2"
-              >
-                <UploadCloud className="w-4 h-4" />
-                <span>Upload Local Catalog to Supabase</span>
-              </button>
-
-              <button
-                onClick={handlePullFromCloud}
-                disabled={isSyncing}
-                className="bg-night-3 hover:bg-night-4 border border-sky-500/30 text-sky-400 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2"
-              >
-                <DownloadCloud className="w-4 h-4" />
-                <span>Pull Latest from Supabase</span>
-              </button>
+                <div className="p-4 rounded-2xl bg-night-3/70 border border-gold/15 space-y-3">
+                  <div className="font-bold text-xs text-white flex items-center gap-2">
+                    <DownloadCloud className="w-4 h-4 text-emerald" /> Pull Supabase → Local
+                  </div>
+                  <p className="text-[11px] text-paper-dim">Fetches the latest catalog from Supabase DB and updates this browser's state.</p>
+                  <button
+                    onClick={handlePullFromCloud}
+                    disabled={isSyncing}
+                    className="w-full bg-emerald/15 hover:bg-emerald text-emerald hover:text-night border border-emerald/30 font-extrabold py-2 rounded-xl text-xs transition-all"
+                  >
+                    Pull Fresh Records
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── MODAL: PRODUCT ── */}
+      {/* ════════ PRODUCT ADD/EDIT MODAL ════════ */}
       {isProductModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-night-2 border border-gold/30 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div className="px-6 py-4 bg-night-3 border-b border-gold/15 flex justify-between items-center">
-              <h3 className="font-display text-lg font-bold text-paper">
-                {editingProduct ? 'Edit Product' : 'Add New Sivakasi Product'}
-              </h3>
-              <button onClick={() => setIsProductModalOpen(false)} className="text-paper/60 hover:text-paper">✕</button>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+          <div className="bg-night-2 border border-gold/30 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative animate-scaleUp max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gold/20 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gold/15 border border-gold/40 flex items-center justify-center text-gold font-bold">
+                  {editingProduct ? '✏️' : '✨'}
+                </div>
+                <div>
+                  <h3 className="font-display text-xl font-bold text-white">
+                    {editingProduct ? 'Edit Fireworks Item' : 'Add New Fireworks Item'}
+                  </h3>
+                  <p className="text-xs text-paper-dim">Fill in product specifications and wholesale pricing details.</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsProductModalOpen(false)}
+                className="p-2 rounded-xl text-paper-dim hover:text-white hover:bg-white/10"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <form onSubmit={handleProductSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
+            {/* Modal Form */}
+            <form onSubmit={handleProductSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Product Name */}
                 <div className="sm:col-span-2">
-                  <label className="block font-bold text-gold uppercase mb-1">Product Name *</label>
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                    Product Title *
+                  </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. 15cm Deluxe Sparklers"
+                    placeholder="e.g. 10cm Electric Sparklers Deluxe"
                     value={prodForm.name}
                     onChange={(e) => setProdForm({ ...prodForm, name: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
                   />
                 </div>
 
+                {/* Category Selection */}
                 <div>
-                  <label className="block font-bold text-gold uppercase mb-1">Category *</label>
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                    Category *
+                  </label>
                   <select
+                    required
                     value={prodForm.categoryId}
                     onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
                   >
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -692,107 +839,157 @@ export default function AdminPage({ categories, products, setCategories, setProd
                   </select>
                 </div>
 
+                {/* Packing Specification */}
                 <div>
-                  <label className="block font-bold text-gold uppercase mb-1">Packing Spec *</label>
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                    Pack Specification
+                  </label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. Box of 10, Pack of 5"
+                    placeholder="e.g. 1 Box (10 Pcs), 1 Bundle"
                     value={prodForm.meta}
                     onChange={(e) => setProdForm({ ...prodForm, meta: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
                   />
                 </div>
 
+                {/* MRP */}
                 <div>
-                  <label className="block font-bold text-gold uppercase mb-1">Original MRP (₹) *</label>
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                    MRP / Retail Price (₹) *
+                  </label>
                   <input
                     type="number"
                     required
-                    min="1"
-                    placeholder="100"
+                    step="0.01"
+                    placeholder="e.g. 450"
                     value={prodForm.mrp}
                     onChange={(e) => setProdForm({ ...prodForm, mrp: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold font-mono"
                   />
                 </div>
 
+                {/* Wholesale Price */}
                 <div>
-                  <label className="block font-bold text-gold uppercase mb-1">Discounted Wholesale Price (₹) *</label>
+                  <label className="block text-xs font-bold text-gold uppercase tracking-wider mb-1 flex items-center justify-between">
+                    <span>Wholesale Price (₹) *</span>
+                    {prodForm.mrp && prodForm.price && (
+                      <span className="text-emerald text-[11px] font-bold">
+                        {Math.max(0, Math.round((1 - parseFloat(prodForm.price) / parseFloat(prodForm.mrp)) * 100))}% OFF
+                      </span>
+                    )}
+                  </label>
                   <input
                     type="number"
                     required
-                    min="1"
-                    placeholder="70"
+                    step="0.01"
+                    placeholder="e.g. 135"
                     value={prodForm.price}
                     onChange={(e) => setProdForm({ ...prodForm, price: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                    className="w-full bg-night-3 border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none focus:border-gold font-mono"
                   />
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label className="block font-bold text-gold uppercase mb-1">Short Description *</label>
+                {/* Product Image Dropzone / Preview */}
+                <div className="sm:col-span-2 space-y-2">
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider">
+                    Product Image (File Upload or URL)
+                  </label>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-night-4 border border-gold/20 flex items-center justify-center overflow-hidden shrink-0">
+                      {prodForm.image ? (
+                        <img src={prodForm.image} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <ImageIcon className="w-6 h-6 text-paper-muted" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 space-y-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProductImage}
+                        className="text-xs text-paper-dim file:mr-3 file:py-1.5 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-gold file:text-night hover:file:bg-gold-soft cursor-pointer"
+                      />
+                      {prodForm.image && (
+                        <button
+                          type="button"
+                          onClick={removeProductImage}
+                          className="text-[11px] text-crimson-light hover:underline block"
+                        >
+                          Remove Image
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                   <input
                     type="text"
-                    required
-                    placeholder="One-line summary for product cards"
-                    value={prodForm.shortDesc}
-                    onChange={(e) => setProdForm({ ...prodForm, shortDesc: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                    placeholder="Or paste direct image URL (https://...)"
+                    value={prodForm.image}
+                    onChange={(e) => setProdForm({ ...prodForm, image: e.target.value })}
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2 text-xs text-paper-dim placeholder-paper-muted focus:outline-none focus:border-gold font-mono"
                   />
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label className="block font-bold text-gold uppercase mb-1">Detailed Description</label>
-                  <textarea
-                    rows="3"
-                    placeholder="Full product details, safety specifications, and Sivakasi certification..."
-                    value={prodForm.description}
-                    onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
-                    className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
-                  />
-                </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="block font-bold text-gold uppercase mb-1">Product Image</label>
-                   <div className="mt-3 flex items-center gap-3">
-                     <label className="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-gold/30 px-4 py-2 text-xs font-bold text-gold hover:bg-gold/10">
-                       <UploadCloud className="w-4 h-4" /> Upload image
-                       <input type="file" accept="image/*" onChange={handleProductImage} className="hidden" />
-                     </label>
-                     {prodForm.image && <img src={prodForm.image} alt="Preview" className="h-12 w-12 rounded-lg object-cover border border-white/10" />}
-                     {prodForm.image && <button type="button" onClick={removeProductImage} className="text-xs font-bold text-red-300 hover:text-red-200">Remove image</button>}
-                   </div>
-                   <p className="mt-1 text-[11px] text-paper/40">JPG, PNG, WEBP · maximum 10 MB</p>
-                 </div>
-
-                <div className="sm:col-span-2 flex items-center gap-2 pt-2">
+                {/* Featured Toggle */}
+                <div className="sm:col-span-2 flex items-center gap-3 p-3 bg-night-3/60 rounded-xl border border-white/5">
                   <input
                     type="checkbox"
-                    id="featuredCheckbox"
+                    id="isFeaturedToggle"
                     checked={prodForm.isFeatured}
                     onChange={(e) => setProdForm({ ...prodForm, isFeatured: e.target.checked })}
-                    className="w-4 h-4 rounded text-gold focus:ring-gold bg-night-4 border-gold/30"
+                    className="w-4 h-4 accent-gold rounded cursor-pointer"
                   />
-                  <label htmlFor="featuredCheckbox" className="text-paper/80 font-semibold cursor-pointer">
-                    Show as Featured Diwali Highlight on Homepage
+                  <label htmlFor="isFeaturedToggle" className="text-xs font-bold text-white cursor-pointer select-none">
+                    Feature on Homepage Highlights Grid ⭐
                   </label>
+                </div>
+
+                {/* Short Description */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                    Short Description
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Dazzling golden sparklers with long burn time."
+                    value={prodForm.shortDesc}
+                    onChange={(e) => setProdForm({ ...prodForm, shortDesc: e.target.value })}
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                  />
+                </div>
+
+                {/* Detailed Description */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                    Detailed Product Description
+                  </label>
+                  <textarea
+                    rows="3"
+                    placeholder="Full safety guidelines and product details..."
+                    value={prodForm.description}
+                    onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
+                    className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                  ></textarea>
                 </div>
               </div>
 
+              {/* Submit Buttons */}
               <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsProductModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-white/10 text-paper/60 hover:text-paper"
+                  className="px-5 py-2.5 rounded-xl bg-night-4 text-paper-dim hover:text-white text-xs font-bold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-gold text-night font-bold px-6 py-2 rounded-xl hover:bg-gold-soft transition-colors"
+                  className="bg-gradient-to-r from-gold to-gold-soft hover:brightness-110 text-night font-black px-6 py-2.5 rounded-xl text-xs shadow-glow-gold transition-all"
                 >
-                  Save Product
+                  {editingProduct ? 'Save Changes' : 'Create Product'}
                 </button>
               </div>
             </form>
@@ -800,49 +997,57 @@ export default function AdminPage({ categories, products, setCategories, setProd
         </div>
       )}
 
-      {/* ── MODAL: CATEGORY ── */}
+      {/* ════════ CATEGORY ADD/EDIT MODAL ════════ */}
       {isCategoryModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-night-2 border border-gold/30 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
-            <div className="px-6 py-4 bg-night-3 border-b border-gold/15 flex justify-between items-center">
-              <h3 className="font-display text-lg font-bold text-paper">
-                {editingCategory ? 'Edit Category' : 'Add New Category'}
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-night-2 border border-gold/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-scaleUp">
+            <div className="flex items-center justify-between pb-4 border-b border-gold/20 mb-5">
+              <h3 className="font-display text-lg font-bold text-white">
+                {editingCategory ? 'Edit Category' : 'Add Category'}
               </h3>
-              <button onClick={() => setIsCategoryModalOpen(false)} className="text-paper/60 hover:text-paper">✕</button>
+              <button onClick={() => setIsCategoryModalOpen(false)} className="text-paper-dim hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <form onSubmit={handleCategorySubmit} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCategorySubmit} className="space-y-4">
               <div>
-                <label className="block font-bold text-gold uppercase mb-1">Category Name *</label>
+                <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                  Category Name *
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Multi-Colour Sparklers"
+                  placeholder="e.g. Ground Chakkars"
                   value={catForm.name}
                   onChange={(e) => setCatForm({ ...catForm, name: e.target.value })}
-                  className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                  className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-gold uppercase mb-1">Slug (URL friendly)</label>
+                <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                  Icon / Emoji
+                </label>
                 <input
                   type="text"
-                  placeholder="e.g. multi-colour-sparklers"
-                  value={catForm.slug}
-                  onChange={(e) => setCatForm({ ...catForm, slug: e.target.value })}
-                  className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-gold uppercase mb-1">Icon Emoji</label>
-                <input
-                  type="text"
-                  placeholder="✨ or 🎆 or 🌸"
+                  placeholder="e.g. 🌀 or 🎆 or 🌸"
                   value={catForm.icon}
                   onChange={(e) => setCatForm({ ...catForm, icon: e.target.value })}
-                  className="w-full bg-night-4 border border-gold/20 rounded-xl px-4 py-2.5 text-paper focus:outline-none focus:border-gold"
+                  className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-white uppercase tracking-wider mb-1">
+                  URL Slug
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. ground-chakkars"
+                  value={catForm.slug}
+                  onChange={(e) => setCatForm({ ...catForm, slug: e.target.value })}
+                  className="w-full bg-night-3 border border-gold/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold font-mono"
                 />
               </div>
 
@@ -850,21 +1055,22 @@ export default function AdminPage({ categories, products, setCategories, setProd
                 <button
                   type="button"
                   onClick={() => setIsCategoryModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-white/10 text-paper/60 hover:text-paper"
+                  className="px-5 py-2.5 rounded-xl bg-night-4 text-paper-dim text-xs font-bold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-gold text-night font-bold px-6 py-2 rounded-xl hover:bg-gold-soft transition-colors"
+                  className="bg-gradient-to-r from-gold to-gold-soft text-night font-black px-6 py-2.5 rounded-xl text-xs shadow-glow-gold"
                 >
-                  Save Category
+                  {editingCategory ? 'Save Category' : 'Add Category'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
     </div>
   );
 }
