@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Sparkles, ShoppingBag, Phone, MapPin, Menu, X, Shield, Lock } from 'lucide-react';
+ import React, { useState } from 'react';
+import { Sparkles, ShoppingBag, Phone, MapPin, Menu, X, Shield } from 'lucide-react';
 
 export default function Header({ currentView, setCurrentView, cartCount, openCart }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -89,17 +89,6 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           >
             Fireworks Catalog
           </button>
-          <button 
-            onClick={() => setCurrentView('admin')}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
-              currentView === 'admin' 
-                ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold' 
-                : 'text-paper-dim/80 hover:text-gold hover:bg-white/5'
-            }`}
-          >
-            <Lock className="w-3 h-3 text-gold" />
-            <span>Admin</span>
-          </button>
         </nav>
 
         {/* Actions (Cart & Mobile Toggle) */}
@@ -147,15 +136,6 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           >
             <span>🎆</span>
             <span>Fireworks Catalog</span>
-          </button>
-          <button 
-            onClick={() => { setCurrentView('admin'); setMobileMenuOpen(false); }}
-            className={`w-full text-left py-3 px-4 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${
-              currentView === 'admin' ? 'bg-gold text-night' : 'text-gold hover:bg-white/5'
-            }`}
-          >
-            <Lock className="w-4 h-4 text-gold" />
-            <span>Admin Portal</span>
           </button>
           <div className="pt-2 border-t border-white/10">
             <a 

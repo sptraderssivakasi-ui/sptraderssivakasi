@@ -13,10 +13,35 @@ import { fetchCategories, fetchProducts } from './services/supabase';
 import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from './data/seedData';
 
 export default function App() {
-  const isAdminRoute = window.location.pathname === '/admin' || window.location.hash === '#admin';
-  const [currentView, setCurrentView] = useState(isAdminRoute ? 'admin' : 'home'); // 'home', 'products', 'detail', 'admin'
+  const checkIsAdminRoute = () => {
+    const p = window.location.pathname.toLowerCase();
+    const h = window.location.hash.toLowerCase();
+    const s = window.location.search.toLowerCase();
+    return p === '/admin' || p.startsWith('/admin') || h === '#admin' || h.startsWith('#admin') || s.includes('admin');
+  };
+
+  const [currentView, setCurrentView] = useState(() => checkIsAdminRoute() ? 'admin' : 'home'); // 'home', 'products', 'detail', 'admin'
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('all');
+
+  // React to hash / URL changes (e.g. typing #admin in URL bar)
+  useEffect(() => {
+    const handleLocationChange = () => {
+      if (checkIsAdminRoute()) {
+        setCurrentView('admin');
+      } else if (window.location.hash === '' || window.location.hash === '#') {
+        // If hash was cleared and we were in admin
+        setCurrentView(prev => prev === 'admin' ? 'home' : prev);
+      }
+    };
+
+    window.addEventListener('hashchange', handleLocationChange);
+    window.addEventListener('popstate', handleLocationChange);
+    return () => {
+      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
 
   // Categories & Products state
   const [categories, setCategories] = useState(() => {
@@ -155,6 +180,13 @@ export default function App() {
             setCategories={setCategories}
             setProducts={setProducts}
             showToast={showToast}
+            onBackToStore={() => {
+              if (window.location.hash.toLowerCase().includes('admin')) {
+                window.history.replaceState(null, '', window.location.pathname);
+              }
+              setCurrentView('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
       </main>

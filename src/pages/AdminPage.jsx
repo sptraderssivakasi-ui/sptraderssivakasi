@@ -11,7 +11,7 @@ import {
   fetchProducts, fetchCategories, uploadProductImage, deleteProductImage
 } from '../services/supabase';
 
-export default function AdminPage({ categories, products, setCategories, setProducts, showToast }) {
+export default function AdminPage({ categories, products, setCategories, setProducts, showToast, onBackToStore }) {
   const [activeTab, setActiveTab] = useState('products'); // 'products', 'categories', 'supabase'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCatFilter, setSelectedCatFilter] = useState('all');
@@ -370,6 +370,17 @@ export default function AdminPage({ categories, products, setCategories, setProd
             <UploadCloud className="w-3.5 h-3.5" />
             <span>Push to Cloud</span>
           </button>
+
+          {onBackToStore && (
+            <button
+              onClick={onBackToStore}
+              className="bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 active:scale-95 ml-auto md:ml-0"
+              title="Return to Customer Storefront"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-gold-light" />
+              <span>Exit Admin</span>
+            </button>
+          )}
         </div>
       </div>
 

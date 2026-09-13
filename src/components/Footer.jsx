@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MapPin, Mail, ShieldCheck, Heart, Sparkles, Clock, Lock } from 'lucide-react';
+import { Phone, MapPin, Mail, ShieldCheck, Heart, Sparkles, Clock } from 'lucide-react';
 
 export default function Footer({ setCurrentView }) {
   return (
@@ -43,11 +43,6 @@ export default function Footer({ setCurrentView }) {
             <li>
               <button onClick={() => setCurrentView('products')} className="hover:text-gold transition-colors flex items-center gap-2">
                 <span>🎆</span> Full Fireworks Catalog
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setCurrentView('admin')} className="hover:text-gold transition-colors flex items-center gap-2 text-gold-soft">
-                <Lock className="w-3.5 h-3.5 text-gold" /> Admin Control Portal
               </button>
             </li>
             <li>
