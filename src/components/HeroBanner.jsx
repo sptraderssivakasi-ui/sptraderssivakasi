@@ -86,6 +86,12 @@ export default function HeroBanner({ onExplore }) {
                   <img
                     src={bannerImage}
                     alt="SP Traders Sivakasi Fireworks Festive Banner"
+                    onError={(e) => {
+                      if (!e.target.dataset.tried) {
+                        e.target.dataset.tried = 'true';
+                        e.target.src = 'images/banner.jpg';
+                      }
+                    }}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     loading="eager"
                   />

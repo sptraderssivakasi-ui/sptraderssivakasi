@@ -14,6 +14,12 @@ export default function Footer({ setCurrentView }) {
             <img 
               src="/images/logo.png" 
               alt="SP Traders Sivakasi logo" 
+              onError={(e) => {
+                if (!e.target.dataset.tried) {
+                  e.target.dataset.tried = 'true';
+                  e.target.src = 'images/logo.png';
+                }
+              }}
               className="w-12 h-12 rounded-2xl object-contain border border-gold/40 bg-night-3 p-1 shadow-glow-gold" 
             />
             <div>

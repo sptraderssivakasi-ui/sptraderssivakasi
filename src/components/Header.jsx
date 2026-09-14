@@ -53,6 +53,12 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
             <img 
               src="/images/logo.png" 
               alt="SP Traders Sivakasi" 
+              onError={(e) => {
+                if (!e.target.dataset.tried) {
+                  e.target.dataset.tried = 'true';
+                  e.target.src = 'images/logo.png';
+                }
+              }}
               className="w-11 h-11 rounded-2xl object-contain border border-gold/40 bg-night-3 p-0.5 group-hover:scale-105 transition-transform shadow-glow-gold" 
             />
           </div>
