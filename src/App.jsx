@@ -17,7 +17,16 @@ export default function App() {
     const p = window.location.pathname.toLowerCase();
     const h = window.location.hash.toLowerCase();
     const s = window.location.search.toLowerCase();
-    return p === '/admin' || p.startsWith('/admin') || h === '#admin' || h.startsWith('#admin') || s.includes('admin');
+    return (
+      p === '/admin' ||
+      p === '/admin/' ||
+      p.startsWith('/admin') ||
+      h === '#admin' ||
+      h === '#/admin' ||
+      h.startsWith('#admin') ||
+      h.startsWith('#/admin') ||
+      s.includes('admin')
+    );
   };
 
   const [currentView, setCurrentView] = useState(() => checkIsAdminRoute() ? 'admin' : 'home'); // 'home', 'products', 'detail', 'admin'
