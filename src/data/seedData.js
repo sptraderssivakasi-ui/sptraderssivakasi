@@ -19,7 +19,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Premium quality 7cm electric sparklers from Sivakasi. Each box contains 10 sparklers that burn bright with a clean, steady flame. Ideal for children under adult supervision. Made from high-quality raw materials ensuring safe and vibrant sparks.',
     meta: 'Box · 10 pieces',
     mrp: 60,
-    price: 42,
+    price: 12,
     image: '',
     isFeatured: true
   },
@@ -32,7 +32,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Stunning 12cm colour sparklers that produce mesmerizing multi-coloured sparks. Perfect for Diwali celebrations, these sparklers create beautiful patterns in the air. Each box contains 10 pieces of premium Sivakasi-made sparklers.',
     meta: 'Box · 10 pieces',
     mrp: 90,
-    price: 63,
+    price: 18,
     image: '',
     isFeatured: false
   },
@@ -45,7 +45,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'The Deluxe Ground Chakkar spins rapidly on the ground producing stunning multi-colour sparks in concentric circles. A classic Diwali favourite, this chakkar is made from premium materials for consistent performance. Place on flat ground, light the fuse, and enjoy the spinning display.',
     meta: 'Pack of 5',
     mrp: 150,
-    price: 105,
+    price: 30,
     image: '',
     isFeatured: true
   },
@@ -58,7 +58,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Experience the magic of two colours spinning simultaneously with our Twin Colour Chakkar. This premium ground spinner alternates between golden and silver sparks creating a mesmerizing visual treat. Each pack contains 4 pieces.',
     meta: 'Pack of 4',
     mrp: 180,
-    price: 126,
+    price: 36,
     image: '',
     isFeatured: false
   },
@@ -71,7 +71,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'A compact yet powerful flower pot that shoots golden sparks upward like a fountain. Perfect for small celebrations and safe to use in open areas. The small flower pot produces a steady stream of beautiful golden sparks lasting about 30 seconds.',
     meta: 'Pack of 5',
     mrp: 200,
-    price: 140,
+    price: 40,
     image: '',
     isFeatured: false
   },
@@ -84,7 +84,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Our Deluxe Fountain Flower Pot is a showstopper. It features multiple stages of colourful sparks — starting with silver, transitioning to gold, and finishing with a spectacular colour burst. Each pot lasts approximately 45 seconds.',
     meta: 'Pack of 3',
     mrp: 350,
-    price: 245,
+    price: 70,
     image: '',
     isFeatured: true
   },
@@ -97,7 +97,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Light up the sky with our 30-Shot Colour Cake! This spectacular aerial firework launches 30 consecutive shots of vibrant colours into the night sky. Each shot bursts into beautiful patterns at height. Perfect for creating a grand celebration atmosphere.',
     meta: '1 piece',
     mrp: 900,
-    price: 630,
+    price: 180,
     image: '',
     isFeatured: true
   },
@@ -110,7 +110,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'The ultimate celebration centrepiece — our 60-Shot Sky Shot delivers a breathtaking aerial display with 60 consecutive colourful bursts. Features multiple colour combinations including red, green, blue, gold, and silver. Best used in open grounds with clear sky visibility.',
     meta: '1 piece',
     mrp: 1800,
-    price: 1260,
+    price: 360,
     image: '',
     isFeatured: false
   },
@@ -123,7 +123,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Traditional Sivakasi whistling rockets that soar high with a distinctive whistling sound before bursting into colourful sparks. Each rocket is fitted with a stabilizing stick for straight flight. Light the fuse from a secure bottle launcher.',
     meta: 'Pack of 10',
     mrp: 250,
-    price: 175,
+    price: 50,
     image: '',
     isFeatured: false
   },
@@ -136,7 +136,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'These premium colour burst rockets fly high and explode into a spectacular display of multiple colours. Each rocket delivers a powerful burst visible from a great distance. Ideal for open ground celebrations.',
     meta: 'Pack of 10',
     mrp: 320,
-    price: 224,
+    price: 64,
     image: '',
     isFeatured: false
   },
@@ -149,7 +149,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'The quintessential Diwali cracker — Bijili Crackers produce two sharp, satisfying bangs. Made from premium materials in Sivakasi, these crackers are reliable and consistent. Each bundle contains 10 individual crackers.',
     meta: 'Bundle of 10',
     mrp: 80,
-    price: 56,
+    price: 16,
     image: '',
     isFeatured: false
   },
@@ -162,7 +162,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Chorsa Crackers are known for their powerful single bang. These classic crackers from Sivakasi are a Diwali tradition. Each bundle contains 5 premium-quality crackers made from carefully selected materials.',
     meta: 'Bundle of 5',
     mrp: 150,
-    price: 105,
+    price: 30,
     image: '',
     isFeatured: false
   },
@@ -175,7 +175,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'A carefully curated assortment of low-noise, child-friendly fireworks. Includes mini sparklers, snake tablets, colour smoke, and ground flowers. All items are designed with child safety in mind — low noise and gentle effects.',
     meta: 'Assorted, low-noise',
     mrp: 220,
-    price: 154,
+    price: 44,
     image: '',
     isFeatured: true
   },
@@ -188,7 +188,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Miniature ground spinners designed specifically for children. These junior spinners produce gentle, colourful sparks with minimal noise. Perfect for young celebrants to enjoy under adult supervision.',
     meta: 'Pack of 6',
     mrp: 120,
-    price: 84,
+    price: 24,
     image: '',
     isFeatured: false
   },
@@ -201,7 +201,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'The Silver Family Gift Box is the perfect all-in-one Diwali pack. Contains 42 assorted items including sparklers, flower pots, ground chakkars, and small aerial shots. Beautifully packaged and ready to gift. Ideal for a complete family celebration.',
     meta: '42 items assorted',
     mrp: 2000,
-    price: 1400,
+    price: 400,
     image: '',
     isFeatured: true
   },
@@ -214,7 +214,7 @@ export const DEFAULT_PRODUCTS = [
     description: 'Our premium Gold Family Gift Box features 65 carefully selected items covering every category — from kid-safe sparklers to grand aerial shots. Premium packaging makes it perfect for gifting. The ultimate Diwali celebration in a single box.',
     meta: '65 items assorted',
     mrp: 3500,
-    price: 2450,
+    price: 700,
     image: '',
     isFeatured: true
   }

@@ -58,17 +58,17 @@ export default function HeroBanner({ onExplore }) {
             </div>
 
             {/* Highlights Mini Row */}
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-paper-dim font-medium">
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-paper-dim font-bold">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald" />
-                <span>Up to 70% Off MRP</span>
+                <CheckCircle2 className="w-4.5 h-4.5 text-emerald" />
+                <span className="text-white font-extrabold">80% Discount Off MRP</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald" />
+                <CheckCircle2 className="w-4.5 h-4.5 text-emerald" />
                 <span>Minimum Order ₹3,000</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald" />
+                <CheckCircle2 className="w-4.5 h-4.5 text-emerald" />
                 <span>Pan-India Safe Transport</span>
               </div>
             </div>
@@ -103,8 +103,8 @@ export default function HeroBanner({ onExplore }) {
                     <span>Sivakasi Factory Direct</span>
                   </div>
 
-                  <div className="absolute top-4 right-4 bg-crimson/90 backdrop-blur-md text-white font-extrabold text-[11px] px-3.5 py-1.5 rounded-full shadow-lg">
-                    FLAT 70% OFF
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-crimson to-maroon backdrop-blur-md text-gold-light font-black text-[11px] px-3.5 py-1.5 rounded-full shadow-lg border border-gold/30 animate-pulse">
+                    80% DISCOUNT
                   </div>
 
                   {/* Banner Bottom Overlay Content */}

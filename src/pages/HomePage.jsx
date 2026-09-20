@@ -140,9 +140,9 @@ export default function HomePage({ categories, products, onAddToCart, onSelectPr
               <div className="w-11 h-11 rounded-xl bg-gold/15 border border-gold/40 text-gold font-black flex items-center justify-center text-sm shadow-glow-gold">
                 03
               </div>
-              <h4 className="font-bold text-sm text-white">Wholesale Discount</h4>
+              <h4 className="font-bold text-sm text-white">80% Wholesale Discount</h4>
               <p className="text-xs text-paper-dim leading-relaxed">
-                Our managers review your order, apply extra volume discounts, and provide freight details for your city.
+                Our managers review your order, confirm your 80% direct factory discount, and provide freight details for your city.
               </p>
             </div>
 

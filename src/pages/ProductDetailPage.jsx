@@ -52,13 +52,22 @@ export default function ProductDetailPage({ product, categories, allProducts, on
         <div className="absolute -top-10 -right-10 w-72 h-72 bg-gold/5 blur-[100px] rounded-full pointer-events-none"></div>
 
         {/* Visual Showcase */}
-        <div className="relative bg-night-4/80 rounded-2xl h-80 lg:h-[450px] flex items-center justify-center overflow-hidden border border-gold/20 shadow-xl group">
+        <div className="relative bg-night-4/90 rounded-2xl h-80 lg:h-[450px] flex items-center justify-center overflow-hidden border border-gold/20 shadow-xl group">
           {product.image ? (
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
+            <>
+              {/* Ambient Blurred Backdrop */}
+              <img 
+                src={product.image} 
+                alt="" 
+                className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-125 pointer-events-none" 
+              />
+              {/* Main Product Image (Fit-to-screen without cropping) */}
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                className="relative z-10 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 ease-out drop-shadow-2xl" 
+              />
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center">
               <span className="text-8xl drop-shadow-lg">🎆</span>

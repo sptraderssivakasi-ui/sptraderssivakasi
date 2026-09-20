@@ -10,15 +10,24 @@ export default function ProductCard({ product, categoryName, onAddToCart, onSele
         {/* Product Visual Area */}
         <div 
           onClick={() => onSelectProduct(product)}
-          className="relative bg-night-3/70 h-52 flex items-center justify-center overflow-hidden border-b border-gold/15 cursor-pointer"
+          className="relative bg-night-4/90 h-56 flex items-center justify-center overflow-hidden border-b border-gold/15 cursor-pointer group/img"
         >
           {product.image ? (
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
-              loading="lazy"
-            />
+            <>
+              {/* Ambient Blurred Backdrop */}
+              <img 
+                src={product.image} 
+                alt="" 
+                className="absolute inset-0 w-full h-full object-cover blur-md opacity-35 scale-110 pointer-events-none" 
+              />
+              {/* Main Product Image (Fit-to-screen without cropping) */}
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                className="relative z-10 w-full h-full object-contain p-2 group-hover/img:scale-105 transition-transform duration-500 ease-out drop-shadow-xl" 
+                loading="lazy"
+              />
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center text-paper-muted group-hover:scale-110 transition-transform duration-500">
               <span className="text-6xl drop-shadow-md">🎆</span>
@@ -27,7 +36,7 @@ export default function ProductCard({ product, categoryName, onAddToCart, onSele
           )}
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-night-2/90 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-night-2/80 via-transparent to-transparent opacity-60 pointer-events-none"></div>
 
           {/* Discount Badge */}
           {discount > 0 && (

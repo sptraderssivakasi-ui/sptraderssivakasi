@@ -135,7 +135,7 @@ export default function CartDrawer({ isOpen, onClose, cart, updateQty, removeIte
               <div className="flex justify-between items-baseline pt-1">
                 <div>
                   <span className="text-xs text-paper-dim uppercase font-bold">Estimated Order Value:</span>
-                  <div className="text-[10px] text-emerald font-semibold">Direct Factory Discount Included</div>
+                  <div className="text-[10px] text-emerald font-black uppercase tracking-wide">80% Direct Factory Discount Included</div>
                 </div>
                 <span className="font-display text-2xl font-black text-gold">₹{totalAmount}</span>
               </div>

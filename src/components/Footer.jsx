@@ -84,24 +84,24 @@ export default function Footer({ setCurrentView }) {
           <h4 className="font-display font-bold text-white text-sm uppercase tracking-wider mb-4 border-b border-gold/20 pb-2 flex items-center gap-2">
             <span>📍 Contact & Depot</span>
           </h4>
-          <div className="space-y-3 text-xs">
+          <div className="space-y-3.5 text-xs">
             <div className="flex items-start gap-2.5">
               <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" />
-              <span>SP Traders Depot, Sivakasi Main Road, Sivakasi – 626123, Tamil Nadu</span>
+              <span className="font-medium leading-relaxed text-paper">SP Traders- PKN Road, Iyyangar Bakery Backside, Sivakasi- 626189.</span>
             </div>
             <div className="flex items-center gap-2.5">
               <Phone className="w-4 h-4 text-gold shrink-0" />
-              <a href="tel:+919443594447" className="text-white hover:text-gold transition-colors font-bold">+91 94435 94447</a>
+              <a href="tel:+919443594447" className="text-white hover:text-gold transition-colors font-extrabold">+91 94435 94447</a>
             </div>
             <div className="flex items-center gap-2.5">
               <Mail className="w-4 h-4 text-gold shrink-0" />
-              <span>sales@sptraderssivakasi.com</span>
+              <a href="mailto:sptraderssivakasi@gmail.com" className="text-paper hover:text-gold transition-colors font-semibold">sptraderssivakasi@gmail.com</a>
             </div>
-            <div className="p-3 bg-night-2/90 rounded-2xl border border-gold/20 mt-3">
-              <div className="text-[11px] font-bold text-gold flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" /> Diwali Dispatch Desk:
+            <div className="p-3.5 bg-night-2/95 rounded-2xl border border-gold/25 mt-3 shadow-lg">
+              <div className="text-[11px] font-black text-gold flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" /> Direct Booking Desk:
               </div>
-              <div className="text-[11px] text-paper-dim mt-0.5">Mon – Sun: 8:00 AM to 10:00 PM (IST)</div>
+              <div className="text-[11px] text-paper-dim mt-0.5 font-medium">Mon – Sun: 8:00 AM to 10:00 PM (IST)</div>
             </div>
           </div>
         </div>

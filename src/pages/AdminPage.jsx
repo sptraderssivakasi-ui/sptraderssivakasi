@@ -547,7 +547,7 @@ export default function AdminPage({ categories, products, setCategories, setProd
                             <div className="flex items-center gap-3">
                               <div className="w-12 h-12 rounded-xl bg-night-4 border border-gold/20 overflow-hidden shrink-0 flex items-center justify-center">
                                 {p.image ? (
-                                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                                  <img src={p.image} alt={p.name} className="w-full h-full object-contain p-0.5" />
                                 ) : (
                                   <span className="text-xl">🎆</span>
                                 )}
