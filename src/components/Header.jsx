@@ -25,10 +25,6 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
       <div className="bg-night-2/90 border-b border-white/5 py-1.5 px-6 hidden sm:block text-xs text-paper-dim font-medium">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex gap-6 items-center">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-gold shrink-0" />
-              <span className="font-semibold">SP Traders- PKN Road, Iyyangar Bakery Backside, Sivakasi- 626189</span>
-            </span>
             <a href="tel:+919443594447" className="flex items-center gap-1.5 text-paper hover:text-gold transition-colors font-bold">
               <Phone className="w-3.5 h-3.5 text-gold" />
               <span>+91 94435 94447</span>
@@ -78,8 +74,8 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           <button
             onClick={() => setCurrentView('home')}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${currentView === 'home'
-                ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold'
-                : 'text-paper-dim hover:text-white hover:bg-white/5'
+              ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold'
+              : 'text-paper-dim hover:text-white hover:bg-white/5'
               }`}
           >
             Home
@@ -87,8 +83,8 @@ export default function Header({ currentView, setCurrentView, cartCount, openCar
           <button
             onClick={() => setCurrentView('products')}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${currentView === 'products'
-                ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold'
-                : 'text-paper-dim hover:text-white hover:bg-white/5'
+              ? 'bg-gradient-to-r from-gold to-gold-soft text-night shadow-glow-gold'
+              : 'text-paper-dim hover:text-white hover:bg-white/5'
               }`}
           >
             Fireworks Catalog

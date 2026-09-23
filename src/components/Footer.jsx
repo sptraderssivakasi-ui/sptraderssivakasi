@@ -11,24 +11,24 @@ export default function Footer({ setCurrentView }) {
         {/* Brand Column */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <img 
-              src="/images/logo.png" 
-              alt="SP Traders Sivakasi logo" 
+            <img
+              src="/images/logo.png"
+              alt="SP Traders Sivakasi logo"
               onError={(e) => {
                 if (!e.target.dataset.tried) {
                   e.target.dataset.tried = 'true';
                   e.target.src = 'images/logo.png';
                 }
               }}
-              className="w-12 h-12 rounded-2xl object-contain border border-gold/40 bg-night-3 p-1 shadow-glow-gold" 
+              className="w-12 h-12 rounded-2xl object-contain border border-gold/40 bg-night-3 p-1 shadow-glow-gold"
             />
             <div>
               <div className="font-display font-black text-xl text-white tracking-wider">SP TRADERS</div>
-              <div className="text-[10px] text-gold font-extrabold tracking-widest uppercase">Sivakasi Fireworks Hub</div>
+              <div className="text-[10px] text-gold font-extrabold tracking-widest uppercase">Sivakasi Fireworks</div>
             </div>
           </div>
           <p className="text-xs leading-relaxed text-paper-dim">
-            Direct Sivakasi factory manufacturing & wholesale distribution. Uncompromising safety, 100% legal green fireworks, and maximum festive value delivered pan-India.
+            Direct from Sivakasi factories — manufacturing and wholesale distribution with uncompromising quality and safety. Bringing you a wide range of fireworks at the best value, delivered across India for a brighter, more memorable celebration.
           </p>
           <div className="inline-flex items-center gap-2 text-xs text-gold font-bold bg-gold/10 px-3 py-1.5 rounded-xl border border-gold/20">
             <ShieldCheck className="w-4 h-4 text-gold" /> Licensed Sivakasi Factory Partner
@@ -52,10 +52,10 @@ export default function Footer({ setCurrentView }) {
               </button>
             </li>
             <li>
-              <a 
-                href="https://wa.me/919443594447?text=Hi%20SP%20Traders%20Sivakasi,%20I%20want%20to%20place%20a%20wholesale%20order." 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href="https://wa.me/919443594447?text=Hi%20SP%20Traders%20Sivakasi,%20I%20want%20to%20place%20a%20wholesale%20order."
+                target="_blank"
+                rel="noreferrer"
                 className="hover:text-emerald transition-colors flex items-center gap-2 text-emerald"
               >
                 <span>💬</span> WhatsApp Direct Order Desk

@@ -36,18 +36,18 @@ export default function ProductCard({ product, categoryName, onAddToCart, onSele
           )}
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-night-2/80 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-night-2/80 via-transparent to-transparent opacity-60 pointer-events-none"></div>
 
           {/* Discount Badge */}
           {discount > 0 && (
-            <span className="absolute top-3 left-3 bg-gradient-to-r from-crimson to-crimson-dark text-white text-[11px] font-black px-2.5 py-1 rounded-xl shadow-md border border-white/10 flex items-center gap-1">
+            <span className="absolute top-3 left-3 z-20 bg-gradient-to-r from-crimson to-crimson-dark text-white text-[11px] font-black px-2.5 py-1 rounded-xl shadow-md border border-white/10 flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-gold-light" />
               <span>{discount}% OFF</span>
             </span>
           )}
 
           {/* Sivakasi Seal */}
-          <span className="absolute top-3 right-3 bg-night/90 backdrop-blur-md border border-gold/30 text-gold text-[10px] font-black px-2.5 py-1 rounded-xl shadow-lg">
+          <span className="absolute top-3 right-3 z-20 bg-night/90 backdrop-blur-md border border-gold/30 text-gold text-[10px] font-black px-2.5 py-1 rounded-xl shadow-lg">
             ⭐ Sivakasi Made
           </span>
 

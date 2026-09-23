@@ -12,7 +12,7 @@ export default function HeroBanner({ onExplore }) {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
           {/* ── Left Column: Headline & Call to Actions ── */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             {/* Top Festive Badge */}
@@ -65,7 +65,7 @@ export default function HeroBanner({ onExplore }) {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald" />
-                <span>Minimum Order ₹3,000</span>
+                <span>Minimum Order ₹2,000</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald" />
@@ -79,7 +79,7 @@ export default function HeroBanner({ onExplore }) {
             <div className="relative mx-auto max-w-md lg:max-w-none group">
               {/* Outer Golden Glow Border Frame */}
               <div className="absolute -inset-1.5 bg-gradient-to-r from-gold via-crimson to-gold rounded-3xl blur-lg opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
-              
+
               <div className="relative rounded-2xl overflow-hidden bg-night-2 border border-gold/30 shadow-card-elevated">
                 {/* Banner Image from src */}
                 <div className="relative aspect-[16/11] overflow-hidden">
@@ -96,7 +96,7 @@ export default function HeroBanner({ onExplore }) {
                     loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
-                  
+
                   {/* Floating Tag */}
                   <div className="absolute top-4 left-4 bg-night/85 backdrop-blur-md border border-gold/40 text-gold font-extrabold text-[11px] px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
                     <Flame className="w-3.5 h-3.5 text-crimson animate-pulse" />
