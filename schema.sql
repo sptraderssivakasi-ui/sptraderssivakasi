@@ -1,110 +1,498 @@
--- =====================================================================
--- SP TRADERS SIVAKASI - SUPABASE POSTGRES DATABASE SCHEMA & POLICIES
--- =====================================================================
 
--- 1. CATEGORIES TABLE
-CREATE TABLE IF NOT EXISTS public.categories (
-    id VARCHAR(50) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    image_url TEXT,
-    display_order INT DEFAULT 0,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = "heap";
+
+
+CREATE TABLE IF NOT EXISTS "public"."categories" (
+    "id" character varying(50) NOT NULL,
+    "name" character varying(100) NOT NULL,
+    "slug" character varying(100) NOT NULL,
+    "image_url" "text",
+    "display_order" integer DEFAULT 0,
+    "is_active" boolean DEFAULT true,
+    "created_at" timestamp with time zone DEFAULT "timezone"('utc'::"text", "now"())
 );
 
--- 2. PRODUCTS TABLE
-CREATE TABLE IF NOT EXISTS public.products (
-    id VARCHAR(50) PRIMARY KEY,
-    category_id VARCHAR(50) NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) NOT NULL,
-    short_desc VARCHAR(255),
-    description TEXT,
-    meta VARCHAR(100) NOT NULL DEFAULT '1 Box',
-    mrp NUMERIC(10, 2) NOT NULL,
-    price NUMERIC(10, 2) NOT NULL,
-    image_url TEXT,
-    is_featured BOOLEAN DEFAULT FALSE,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+ALTER TABLE "public"."categories" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."enquiries" (
+    "id" bigint NOT NULL,
+    "customer_name" character varying(150),
+    "customer_phone" character varying(30) NOT NULL,
+    "customer_city" character varying(100),
+    "total_estimated_amount" numeric(12,2) DEFAULT 0.00,
+    "items" "jsonb" DEFAULT '[]'::"jsonb",
+    "enquiry_channel" character varying(50) DEFAULT 'whatsapp'::character varying,
+    "status" character varying(50) DEFAULT 'pending'::character varying,
+    "created_at" timestamp with time zone DEFAULT "timezone"('utc'::"text", "now"())
 );
 
--- 3. ENQUIRIES / LEADS TABLE (Tracks incoming cart orders & WhatsApp enquiries)
-CREATE TABLE IF NOT EXISTS public.enquiries (
-    id BIGSERIAL PRIMARY KEY,
-    customer_name VARCHAR(150),
-    customer_phone VARCHAR(30) NOT NULL,
-    customer_city VARCHAR(100),
-    total_estimated_amount NUMERIC(12, 2) DEFAULT 0.00,
-    items JSONB DEFAULT '[]'::jsonb,
-    enquiry_channel VARCHAR(50) DEFAULT 'whatsapp',
-    status VARCHAR(50) DEFAULT 'pending',
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+
+ALTER TABLE "public"."enquiries" OWNER TO "postgres";
+
+
+CREATE SEQUENCE IF NOT EXISTS "public"."enquiries_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE "public"."enquiries_id_seq" OWNER TO "postgres";
+
+
+ALTER SEQUENCE "public"."enquiries_id_seq" OWNED BY "public"."enquiries"."id";
+
+
+
+CREATE TABLE IF NOT EXISTS "public"."products" (
+    "id" character varying(50) NOT NULL,
+    "category_id" character varying(50) NOT NULL,
+    "name" character varying(255) NOT NULL,
+    "slug" character varying(255) NOT NULL,
+    "short_desc" character varying(255),
+    "description" "text",
+    "meta" character varying(100) DEFAULT '1 Box'::character varying NOT NULL,
+    "mrp" numeric(10,2) NOT NULL,
+    "price" numeric(10,2) NOT NULL,
+    "image_url" "text",
+    "is_featured" boolean DEFAULT false,
+    "is_active" boolean DEFAULT true,
+    "created_at" timestamp with time zone DEFAULT "timezone"('utc'::"text", "now"()),
+    "in_stock" boolean DEFAULT true
 );
 
--- 4. PERFORMANCE INDEXES
-CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
-CREATE INDEX IF NOT EXISTS idx_products_active ON public.products(is_active);
-CREATE INDEX IF NOT EXISTS idx_categories_slug ON public.categories(slug);
-CREATE INDEX IF NOT EXISTS idx_enquiries_created ON public.enquiries(created_at);
 
--- =====================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
--- =====================================================================
-ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.enquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."products" OWNER TO "postgres";
 
--- Drop existing policies if they already exist
-DROP POLICY IF EXISTS "Public categories read access" ON public.categories;
-DROP POLICY IF EXISTS "Public products read access" ON public.products;
-DROP POLICY IF EXISTS "Allow public all on categories" ON public.categories;
-DROP POLICY IF EXISTS "Allow public all on products" ON public.products;
-DROP POLICY IF EXISTS "Allow public insert enquiry" ON public.enquiries;
 
--- Allow public read access to catalog
-CREATE POLICY "Public categories read access" ON public.categories FOR SELECT USING (true);
-CREATE POLICY "Public products read access" ON public.products FOR SELECT USING (true);
+CREATE TABLE IF NOT EXISTS "public"."store_settings" (
+    "id" bigint NOT NULL,
+    "packing_enabled" boolean DEFAULT true,
+    "packing_percentage" numeric(5,2) DEFAULT 3.00
+);
 
--- Allow anon & authenticated insert/update/delete for store management
-CREATE POLICY "Allow public all on categories" ON public.categories FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public all on products" ON public.products FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public insert enquiry" ON public.enquiries FOR ALL USING (true) WITH CHECK (true);
 
--- =====================================================================
--- SEED DATA (SP Traders Sivakasi Catalog)
--- =====================================================================
-INSERT INTO public.categories (id, name, slug, image_url, display_order) VALUES
-('cat-1', 'Sparklers', 'sparklers', 'images/categories/sparklers.jpg', 1),
-('cat-2', 'Ground Chakkars', 'ground', 'images/categories/ground.jpg', 2),
-('cat-3', 'Flower Pots', 'flowerpots', 'images/categories/flowerpots.jpg', 3),
-('cat-4', 'Aerial Shots', 'aerial', 'images/categories/aerial.jpg', 4),
-('cat-5', 'Rockets', 'rockets', 'images/categories/rockets.jpg', 5),
-('cat-6', 'Sound Crackers', 'sound', 'images/categories/sound.jpg', 6),
-('cat-7', 'Kids Special', 'kids', 'images/categories/kids.jpg', 7),
-('cat-8', 'Gift Boxes', 'giftbox', 'images/categories/giftbox.jpg', 8)
-ON CONFLICT (id) DO NOTHING;
+ALTER TABLE "public"."store_settings" OWNER TO "postgres";
 
-INSERT INTO public.products (id, category_id, name, slug, short_desc, description, meta, mrp, price, is_featured) VALUES
-('sp1', 'cat-1', '7cm Electric Sparklers (Box of 10)', '7cm-electric-sparklers', 'Classic electric sparklers safe for all ages.', 'Premium quality 7cm electric sparklers from Sivakasi. Each box contains 10 sparklers that burn bright with a clean, steady flame. Ideal for children under adult supervision. Made from high-quality raw materials ensuring safe and vibrant sparks.', 'Box · 10 pieces', 60.00, 42.00, TRUE),
-('sp2', 'cat-1', '12cm Colour Sparklers (Box of 10)', '12cm-colour-sparklers', 'Multi-colour sparklers with vibrant effects.', 'Stunning 12cm colour sparklers that produce mesmerizing multi-coloured sparks. Perfect for Diwali celebrations, these sparklers create beautiful patterns in the air. Each box contains 10 pieces of premium Sivakasi-made sparklers.', 'Box · 10 pieces', 90.00, 63.00, FALSE),
-('gc1', 'cat-2', 'Ground Chakkar – Deluxe', 'ground-chakkar-deluxe', 'Spinning ground display with multi-colour effects.', 'The Deluxe Ground Chakkar spins rapidly on the ground producing stunning multi-colour sparks in concentric circles. A classic Diwali favourite, this chakkar is made from premium materials for consistent performance. Place on flat ground, light the fuse, and enjoy the spinning display.', 'Pack of 5', 150.00, 105.00, TRUE),
-('gc2', 'cat-2', 'Twin Colour Chakkar', 'twin-colour-chakkar', 'Dual-colour spinning ground chakkar.', 'Experience the magic of two colours spinning simultaneously with our Twin Colour Chakkar. This premium ground spinner alternates between golden and silver sparks creating a mesmerizing visual treat. Each pack contains 4 pieces.', 'Pack of 4', 180.00, 126.00, FALSE),
-('fp1', 'cat-3', 'Flower Pot – Small', 'flower-pot-small', 'Compact fountain with golden sparks.', 'A compact yet powerful flower pot that shoots golden sparks upward like a fountain. Perfect for small celebrations and safe to use in open areas. The small flower pot produces a steady stream of beautiful golden sparks lasting about 30 seconds.', 'Pack of 5', 200.00, 140.00, FALSE),
-('fp2', 'cat-3', 'Flower Pot – Deluxe Fountain', 'flower-pot-deluxe-fountain', 'Premium fountain with multi-stage effects.', 'Our Deluxe Fountain Flower Pot is a showstopper. It features multiple stages of colourful sparks — starting with silver, transitioning to gold, and finishing with a spectacular colour burst. Each pot lasts approximately 45 seconds.', 'Pack of 3', 350.00, 245.00, TRUE),
-('ar1', 'cat-4', '30-Shot Colour Cake', '30-shot-colour-cake', '30 consecutive aerial colour shots.', 'Light up the sky with our 30-Shot Colour Cake! This spectacular aerial firework launches 30 consecutive shots of vibrant colours into the night sky. Each shot bursts into beautiful patterns at height. Perfect for creating a grand celebration atmosphere.', '1 piece', 900.00, 630.00, TRUE),
-('ar2', 'cat-4', '60-Shot Sky Shot', '60-shot-sky-shot', 'Premium 60-shot aerial display.', 'The ultimate celebration centrepiece — our 60-Shot Sky Shot delivers a breathtaking aerial display with 60 consecutive colourful bursts. Features multiple colour combinations including red, green, blue, gold, and silver. Best used in open grounds with clear sky visibility.', '1 piece', 1800.00, 1260.00, FALSE),
-('rk1', 'cat-5', 'Whistling Rocket', 'whistling-rocket', 'Classic whistling rockets with trail.', 'Traditional Sivakasi whistling rockets that soar high with a distinctive whistling sound before bursting into colourful sparks. Each rocket is fitted with a stabilizing stick for straight flight. Light the fuse from a secure bottle launcher.', 'Pack of 10', 250.00, 175.00, FALSE),
-('rk2', 'cat-5', 'Colour Burst Rocket', 'colour-burst-rocket', 'Rockets with colourful sky burst.', 'These premium colour burst rockets fly high and explode into a spectacular display of multiple colours. Each rocket delivers a powerful burst visible from a great distance. Ideal for open ground celebrations.', 'Pack of 10', 320.00, 224.00, FALSE),
-('sc1', 'cat-6', 'Bijili Crackers (2-sound)', 'bijili-crackers', 'Classic double-bang crackers.', 'The quintessential Diwali cracker — Bijili Crackers produce two sharp, satisfying bangs. Made from premium materials in Sivakasi, these crackers are reliable and consistent. Each bundle contains 10 individual crackers.', 'Bundle of 10', 80.00, 56.00, FALSE),
-('sc2', 'cat-6', 'Chorsa Crackers', 'chorsa-crackers', 'Powerful single-bang crackers.', 'Chorsa Crackers are known for their powerful single bang. These classic crackers from Sivakasi are a Diwali tradition. Each bundle contains 5 premium-quality crackers made from carefully selected materials.', 'Bundle of 5', 150.00, 105.00, FALSE),
-('ks1', 'cat-7', 'Kids Novelty Pack', 'kids-novelty-pack', 'Safe, low-noise fun for young ones.', 'A carefully curated assortment of low-noise, child-friendly fireworks. Includes mini sparklers, snake tablets, colour smoke, and ground flowers. All items are designed with child safety in mind — low noise and gentle effects.', 'Assorted, low-noise', 220.00, 154.00, TRUE),
-('ks2', 'cat-7', 'Ground Spinner – Junior', 'ground-spinner-junior', 'Small spinning ground display for kids.', 'Miniature ground spinners designed specifically for children. These junior spinners produce gentle, colourful sparks with minimal noise. Perfect for young celebrants to enjoy under adult supervision.', 'Pack of 6', 120.00, 84.00, FALSE),
-('gb1', 'cat-8', 'Family Gift Box – Silver', 'family-gift-box-silver', '42-item assorted family celebration pack.', 'The Silver Family Gift Box is the perfect all-in-one Diwali pack. Contains 42 assorted items including sparklers, flower pots, ground chakkars, and small aerial shots. Beautifully packaged and ready to gift. Ideal for a complete family celebration.', '42 items assorted', 2000.00, 1400.00, TRUE),
-('gb2', 'cat-8', 'Family Gift Box – Gold', 'family-gift-box-gold', '65-item premium assorted celebration pack.', 'Our premium Gold Family Gift Box features 65 carefully selected items covering every category — from kid-safe sparklers to grand aerial shots. Premium packaging makes it perfect for gifting. The ultimate Diwali celebration in a single box.', '65 items assorted', 3500.00, 2450.00, TRUE)
-ON CONFLICT (id) DO NOTHING;
+
+ALTER TABLE "public"."store_settings" ALTER COLUMN "id" ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME "public"."store_settings_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+ALTER TABLE ONLY "public"."enquiries" ALTER COLUMN "id" SET DEFAULT "nextval"('"public"."enquiries_id_seq"'::"regclass");
+
+
+
+ALTER TABLE ONLY "public"."categories"
+    ADD CONSTRAINT "categories_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."categories"
+    ADD CONSTRAINT "categories_slug_key" UNIQUE ("slug");
+
+
+
+ALTER TABLE ONLY "public"."enquiries"
+    ADD CONSTRAINT "enquiries_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."products"
+    ADD CONSTRAINT "products_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."store_settings"
+    ADD CONSTRAINT "store_settings_pkey" PRIMARY KEY ("id");
+
+
+
+CREATE INDEX "idx_categories_slug" ON "public"."categories" USING "btree" ("slug");
+
+
+
+CREATE INDEX "idx_enquiries_created" ON "public"."enquiries" USING "btree" ("created_at");
+
+
+
+CREATE INDEX "idx_products_active" ON "public"."products" USING "btree" ("is_active");
+
+
+
+CREATE INDEX "idx_products_category" ON "public"."products" USING "btree" ("category_id");
+
+
+
+ALTER TABLE ONLY "public"."products"
+    ADD CONSTRAINT "products_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE CASCADE;
+
+
+
+CREATE POLICY "Allow anon insert categories" ON "public"."categories" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Allow anon insert products" ON "public"."products" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Allow public all on categories" ON "public"."categories" TO "authenticated", "anon" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Allow public all on enquiries" ON "public"."enquiries" TO "authenticated", "anon" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Allow public all on products" ON "public"."products" TO "authenticated", "anon" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Allow public insert enquiry" ON "public"."enquiries" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Allow public read access to store settings" ON "public"."store_settings" FOR SELECT TO "authenticated", "anon" USING (true);
+
+
+
+CREATE POLICY "Allow public submit enquiry" ON "public"."enquiries" USING (true) WITH CHECK (true);
+
+
+
+CREATE POLICY "Public categories read access" ON "public"."categories" FOR SELECT USING (true);
+
+
+
+CREATE POLICY "Public products read access" ON "public"."products" FOR SELECT USING (true);
+
+
+
+ALTER TABLE "public"."categories" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."enquiries" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."products" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."store_settings" ENABLE ROW LEVEL SECURITY;
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GRANT ALL ON TABLE "public"."categories" TO "anon";
+GRANT ALL ON TABLE "public"."categories" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."categories" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."enquiries" TO "anon";
+GRANT ALL ON TABLE "public"."enquiries" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."enquiries" TO "service_role";
+
+
+
+GRANT ALL ON SEQUENCE "public"."enquiries_id_seq" TO "anon";
+GRANT ALL ON SEQUENCE "public"."enquiries_id_seq" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."products" TO "anon";
+GRANT ALL ON TABLE "public"."products" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."products" TO "service_role";
+
+
+
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."store_settings" TO "anon";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."store_settings" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."store_settings" TO "service_role";
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLES TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

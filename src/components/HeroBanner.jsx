@@ -111,9 +111,9 @@ export default function HeroBanner({ onExplore }) {
                   <div className="absolute bottom-4 left-4 right-4 bg-night-3/90 backdrop-blur-md border border-white/10 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
                       <div className="text-white font-bold text-xs flex items-center gap-1.5">
-                        <span>🎆 2026 Mega Family Boxes</span>
+                        <span>🎆 2026 Gift Boxes</span>
                       </div>
-                      <div className="text-[11px] text-gold font-medium">Starting from ₹1,299 wholesale</div>
+                      <div className="text-[11px] text-gold font-medium">Starting from ₹299 wholesale</div>
                     </div>
                     <button
                       onClick={onExplore}
