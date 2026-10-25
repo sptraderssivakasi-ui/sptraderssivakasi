@@ -209,12 +209,27 @@ export async function submitEnquiry(enquiry) {
 
   // Send WhatsApp message
   const itemsText = enquiry.items.map(i => `• ${i.name} (${i.meta}) x${i.qty} — ₹${i.price * i.qty}`).join('\n');
+  
+  const productTotal = Number(enquiry.total || 0);
+  const packingPercentage = 3;
+  const packingCharge = productTotal * (packingPercentage / 100);
+  const grandTotal = productTotal + packingCharge;
+  
   const msg = encodeURIComponent(
     `🎆 *SP Traders Sivakasi — Diwali Enquiry*\n\n` +
-    `Hello, I would like to confirm availability and wholesale pricing for:\n\n` +
+    `Hello, I would like to confirm availability and retail pricing for:\n\n` +
     `${itemsText}\n\n` +
-    `💰 *Estimated Total:* ₹${enquiry.total}\n` +
+     💰 *Product Total:* ₹${productTotal.toFixed(2)}\n` +
+    `📦 *Packing Charges (3%):* ₹${packingCharge.toFixed(2)}\n` +
+    `💵 *Total Amount:* ₹${grandTotal.toFixed(2)}\n` +
     `📍 *Delivery City:* ${enquiry.city || 'Not specified'}\n\n` +
+
+    `*Terms and Conditions:*\n` +
+    `⭐ 3% Packing Charges will be included for the total amount\n` +
+    `⭐ Parcel will be booked on the TO PAY mode for transport delivery\n` +
+    `⭐ Only G-Pay, PhonePe and Paytm UPI mode of payment will be accepted\n` +
+    `⭐ Products will be sent only after the payment received by us\n\n` +
+    
     `Please confirm order dispatch details.`
   );
 
