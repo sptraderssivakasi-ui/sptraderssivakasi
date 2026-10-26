@@ -219,7 +219,7 @@ export async function submitEnquiry(enquiry) {
     `🎆 *SP Traders Sivakasi — Diwali Enquiry*\n\n` +
     `Hello, I would like to confirm availability and retail pricing for:\n\n` +
     `${itemsText}\n\n` +
-     💰 *Product Total:* ₹${productTotal.toFixed(2)}\n` +
+    `💰 *Product Total:* ₹${productTotal.toFixed(2)}\n` +
     `📦 *Packing Charges (3%):* ₹${packingCharge.toFixed(2)}\n` +
     `💵 *Total Amount:* ₹${grandTotal.toFixed(2)}\n` +
     `📍 *Delivery City:* ${enquiry.city || 'Not specified'}\n\n` +
